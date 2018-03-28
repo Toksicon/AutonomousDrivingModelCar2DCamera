@@ -9,7 +9,7 @@
 -g3
 -gdwarf-2
 -gstrict-dwarf
--T"D:/Projects/TH/ITProj/src/NXP_Cup_Alamak_Minimal/Project_Settings/Linker_Files/MKL25Z128_flash.ld"
+-T"D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Settings/Linker_Files/MKL25Z128_flash.ld"
 -Xlinker
 --gc-sections
 -L"C:/Freescale/CW MCU v11.0/MCU/ARM_GCC_Support/ewl/lib/armv6-m"

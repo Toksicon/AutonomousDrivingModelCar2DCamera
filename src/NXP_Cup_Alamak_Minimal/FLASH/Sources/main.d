@@ -2,8 +2,8 @@ Sources/main.o: ../Sources/main.c \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/lib_ewl.prefix \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/common.prefix \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/ewl_c_version.h \
- D:/Projects/TH/ITProj/src/NXP_Cup_Alamak_Minimal/Project_Headers/derivative.h \
- D:/Projects/TH/ITProj/src/NXP_Cup_Alamak_Minimal/Project_Headers/MKL25Z4.h \
+ D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Headers/derivative.h \
+ D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Headers/MKL25Z4.h \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/stdint.h \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/ansi_parms.h \
  C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/ewlGlobals.h \
@@ -19,9 +19,9 @@ C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/common.prefix:
 
 C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/ewl_c_version.h:
 
-D:/Projects/TH/ITProj/src/NXP_Cup_Alamak_Minimal/Project_Headers/derivative.h:
+D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Headers/derivative.h:
 
-D:/Projects/TH/ITProj/src/NXP_Cup_Alamak_Minimal/Project_Headers/MKL25Z4.h:
+D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Headers/MKL25Z4.h:
 
 C:/Freescale/CW\ MCU\ v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include/stdint.h:
 
