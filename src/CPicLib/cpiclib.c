@@ -2,33 +2,119 @@
 #include "cpiclib.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <math.h>
 
 
-static float normalize_color(float color)
+static contrast_line_t create_contrast_line(uint_t length)
 {
-    color /= 255;
+    contrast_line_t line;
+    line.data = malloc(length * sizeof(float));
+    line.length = length;
 
-    if (color <= 0.03928f)
-    {
-        return (color / 12.92f);
-    }
-
-    return pow((color + 0.055) / 1.055, 2.4f);
+    return line;
 }
 
-float luminanace(float r, float g, float b)
+static void delete_contrast_line(contrast_line_t line)
 {
-    float a[] = {
-        normalize_color(r),
-        normalize_color(g),
-        normalize_color(b)
-    };
-    
-    return a[0] * 0.2126f + a[1] * 0.7152f + a[2] * 0.0722f;
+    free(line.data);
 }
+
 
 float contrast(rgb_color_t rgb1, rgb_color_t rgb2)
 {
-    return (luminanace(rgb1.r, rgb1.g, rgb1.b) + 0.05f) / (luminanace(rgb2.r, rgb2.g, rgb2.b) + 0.05f);
+    // https://en.wikipedia.org/wiki/Euclidean_distance
+    byte_t dr = rgb1.r - rgb2.r;
+    byte_t dg = rgb1.g - rgb2.g;
+    byte_t db = rgb1.b - rgb2.b;
+
+    return ((dr * dr) + (dg * dg) + (db * db));
 }
+
+contrast_line_t line_contrast(pixel_line_t pixel_line)
+{
+    contrast_line_t contrast_line = create_contrast_line(pixel_line.length - 1);
+
+    for (uint_t i = 0; i < pixel_line.length - 1; i++)
+    {
+        contrast_line.data[i] = contrast(pixel_line.data[i], pixel_line.data[i + 1]);
+    }
+
+    return contrast_line;
+}
+
+float resolve_row_mid(pixel_line_t pixel_line)
+{
+    contrast_line_t contrast_line = line_contrast(pixel_line);
+
+    // use the highest contrast values with largest distance
+    const uint_t CONTRAST_PROBES = 4;
+    float highest_contrasts[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    uint_t highest_contrast_pixels[] = { 0, 0, 0, 0 };
+
+    for (uint_t i = 0; i < contrast_line.length; i++)
+    {
+        for (uint_t j = 0; j < CONTRAST_PROBES; j++)
+        {
+            if (contrast_line.data[i] > highest_contrasts[j])
+            {
+                highest_contrasts[j] = contrast_line.data[i];
+                highest_contrast_pixels[j] = i;
+                break;
+            }
+        }
+    }
+
+    delete_contrast_line(contrast_line);
+
+    printf("\nhighest_contrast: %u, %u, %u, %u\n",
+        highest_contrast_pixels[0],
+        highest_contrast_pixels[1],
+        highest_contrast_pixels[2],
+        highest_contrast_pixels[3]
+    );
+
+    uint_t left_pixel = pixel_line.length - 1;
+    uint_t right_pixel = 0;
+
+    for (uint_t i = 0; i < CONTRAST_PROBES; i++)
+    {
+        if (highest_contrasts[i])
+        {
+            uint_t pixel = highest_contrast_pixels[i];
+
+            if (left_pixel > pixel)
+            {
+                left_pixel = pixel;
+            }
+
+            if (right_pixel < pixel)
+            {
+                right_pixel = pixel;
+            }
+        }
+    }
+
+    return (left_pixel + (right_pixel - left_pixel) / 2.0f);
+}
+
+pixel_line_t* resolve_mid(image_t image, uint_t samples)
+{
+    for (uint_t y = 0; y < image.height; y++)
+    {
+        for (uint_t x = 0; x < image.width; x++)
+        {
+            rgb_color_t pixel = image.data[y * image.width + x];
+
+            printf("(%u,\t%u,\t%u)\t", pixel.r, pixel.g, pixel.b);
+        }
+
+        pixel_line_t pxline;
+        pxline.data = &(image.data[y * image.width]);
+        pxline.length = image.width;
+        printf("\nMid: %f\n", resolve_row_mid(pxline));
+    }
+
+    rgb_color_t* rgb = malloc(sizeof(rgb_color_t));
+}
+
