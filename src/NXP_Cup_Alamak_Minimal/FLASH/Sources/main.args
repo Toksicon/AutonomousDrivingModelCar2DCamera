@@ -4,8 +4,8 @@
 -g3
 -gdwarf-2
 -gstrict-dwarf
--I"D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Headers"
--I"D:/Projects/TH/IT-Project/src/NXP_Cup_Alamak_Minimal/Project_Settings/Startup_Code"
+-I"C:/Users/kraut/OneDrive/workspace/2DKameraVectorToolChain/src/NXP_Cup_Alamak_Minimal/Project_Headers"
+-I"C:/Users/kraut/OneDrive/workspace/2DKameraVectorToolChain/src/NXP_Cup_Alamak_Minimal/Project_Settings/Startup_Code"
 -I"C:/Freescale/CW MCU v11.0/MCU/ARM_GCC_Support/ewl/EWL_C/include"
 -I"C:/Freescale/CW MCU v11.0/MCU/ARM_GCC_Support/ewl/EWL_Runtime/include"
 -O0

@@ -1,0 +1,12 @@
+sudo apt-get update
+sudo apt-get upgrade
+sudo apt-get install python3-dev
+sudo pip3 install picamera
+sudo raspi-config #->enable camera
+sudo pip3 install numpy
+sudo apt-get install libatlas-base-dev
+echo "dtparam=spi=on" | sudo tee -a /boot/config.txt
+echo "dtoverlay=mcp2515-can0-overlay,oscillator=16000000,interrupt=25" | sudo tee -a /boot/config.txt
+echo "dtoverlay=spi-bcm2835-overlay" | sudo tee -a /boot/config.txt
+cd /hardbyte-python-can...
+sudo python3 setup.py install
