@@ -58,4 +58,4 @@ typedef struct
 } contrast_line_t;
 
 extern CPICLIB_EXPORT float contrast(rgb_color_t rgb1, rgb_color_t rgb2);
-extern CPICLIB_EXPORT pixel_line_t* resolve_mid(image_t image, uint_t samples);
+extern CPICLIB_EXPORT uint_t* resolve_mid(image_t image, uint_t samples);

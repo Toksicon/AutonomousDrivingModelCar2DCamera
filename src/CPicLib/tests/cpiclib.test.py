@@ -1,6 +1,10 @@
 #!/usr/bin/python
 
 from ctypes import *
+from PIL import Image, ImageDraw
+import numpy
+import os
+import time
 
 
 class CPicRGB(Structure):
@@ -8,12 +12,12 @@ class CPicRGB(Structure):
 
     @staticmethod
     def create(rawRGB):
-        if isinstance(rawRGB, list) or isinstance(rawRGB, tuple):
+        if isinstance(rawRGB, list) or isinstance(rawRGB, tuple) or isinstance(rawRGB, numpy.ndarray):
             return CPicRGB(rawRGB[0], rawRGB[1], rawRGB[2])
         elif isinstance(rawRGB, dict):
             return CPicRGB(rawRGB['r'], rawRGB['g'], rawRGB['b'])
         else:
-            raise 'Failed to create CPicRGB from type ' + rawRGB
+            raise Exception('Failed to create CPicRGB from type {}'.format(type(rawRGB)))
 
 class CPicImage(Structure):
     _fields_ = [('data', POINTER(CPicRGB)), ('width', c_uint), ('height', c_uint)]
@@ -47,24 +51,38 @@ class CPicLib:
 
         # (image, samples) -> rgb[]
         self._dll.resolve_mid.argtypes = [CPicImage, c_uint]
-        self._dll.resolve_mid.restype = POINTER(CPicRGB)
 
     def contrast(self, rgb1, rgb2):
         return self._dll.contrast(CPicRGB.create(rgb1), CPicRGB.create(rgb2))
 
     def resolve_mid(self, image, samples=2):
+        self._dll.resolve_mid.restype = POINTER(c_uint * len(image))
         return self._dll.resolve_mid(CPicImage.create(image), c_uint(samples))
-        
 
-
-def main():
-    cpiclib = CPicLib()
-    print(cpiclib.resolve_mid(
-        (
-            (   (0, 0, 10), (10, 0, 0), (0, 0, 10), (0, 4, 0)  ),
-            (   (0, 4, 2),  (0, 5, 2),  (0, 4, 2),  (4, 4, 0)  ),
-        )
-    ))
 
 if __name__ == '__main__':
-    main()
+    root_path = os.path.dirname(os.path.realpath(__file__))
+
+    img = Image.open(os.path.join(root_path, 'image.png'))
+    image = numpy.asarray(img)
+    print(image.shape)
+    _y, _x, _z = image.shape
+    # str_array = [str(image[y][x]) for y in range(_y) for x in range(_x)]
+
+    cpiclib = CPicLib()
+
+    t0 = time.time()
+    result = cpiclib.resolve_mid(image)
+    t1 = time.time()
+
+    print("Time: {:.3f}s".format((t1 - t0)))
+
+    draw = ImageDraw.Draw(img)
+
+    for y in range(0, len(image)):
+        mid = result.contents[y]
+
+        draw.line((mid, y) + (mid, y), fill=(255, 0, 0))
+
+    img.save(os.path.join(root_path, 'out.png'))
+    img.show()

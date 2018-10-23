@@ -5,6 +5,8 @@
 #include <stdlib.h>
 #include <math.h>
 
+#include <time.h>
+
 
 static contrast_line_t create_contrast_line(uint_t length)
 {
@@ -43,7 +45,7 @@ contrast_line_t line_contrast(pixel_line_t pixel_line)
     return contrast_line;
 }
 
-float resolve_row_mid(pixel_line_t pixel_line)
+uint_t resolve_row_mid(pixel_line_t pixel_line)
 {
     contrast_line_t contrast_line = line_contrast(pixel_line);
 
@@ -67,12 +69,12 @@ float resolve_row_mid(pixel_line_t pixel_line)
 
     delete_contrast_line(contrast_line);
 
-    printf("\nhighest_contrast: %u, %u, %u, %u\n",
-        highest_contrast_pixels[0],
-        highest_contrast_pixels[1],
-        highest_contrast_pixels[2],
-        highest_contrast_pixels[3]
-    );
+    // printf("\nhighest_contrast: %u, %u, %u, %u\n",
+    //     highest_contrast_pixels[0],
+    //     highest_contrast_pixels[1],
+    //     highest_contrast_pixels[2],
+    //     highest_contrast_pixels[3]
+    // );
 
     uint_t left_pixel = pixel_line.length - 1;
     uint_t right_pixel = 0;
@@ -95,26 +97,38 @@ float resolve_row_mid(pixel_line_t pixel_line)
         }
     }
 
-    return (left_pixel + (right_pixel - left_pixel) / 2.0f);
+    // printf("L: %u, R: %u, ", left_pixel, right_pixel);
+    return (left_pixel + (right_pixel - left_pixel) / 2);
 }
 
-pixel_line_t* resolve_mid(image_t image, uint_t samples)
+uint_t* resolve_mid(image_t image, uint_t samples)
 {
+    clock_t t1, t2;
+    t1 = clock();
+
+    uint_t* mids = malloc(sizeof(uint_t) * image.height);
+
     for (uint_t y = 0; y < image.height; y++)
     {
         for (uint_t x = 0; x < image.width; x++)
         {
             rgb_color_t pixel = image.data[y * image.width + x];
 
-            printf("(%u,\t%u,\t%u)\t", pixel.r, pixel.g, pixel.b);
+            // printf("(%u,\t%u,\t%u)\t", pixel.r, pixel.g, pixel.b);
         }
 
         pixel_line_t pxline;
         pxline.data = &(image.data[y * image.width]);
         pxline.length = image.width;
-        printf("\nMid: %f\n", resolve_row_mid(pxline));
+
+        mids[y] = resolve_row_mid(pxline);
+        // printf("M: %u\n", mids[y]);
     }
 
-    rgb_color_t* rgb = malloc(sizeof(rgb_color_t));
+    t2 = clock();
+    float diff = ((float)(t2 - t1) / CLOCKS_PER_SEC);
+    printf("Time: %.3fs\n", diff);
+
+    return mids;
 }
 
