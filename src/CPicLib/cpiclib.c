@@ -26,9 +26,9 @@ static void delete_contrast_line(contrast_line_t line)
 float contrast(rgb_color_t rgb1, rgb_color_t rgb2)
 {
     // https://en.wikipedia.org/wiki/Euclidean_distance
-    byte_t dr = rgb1.r - rgb2.r;
-    byte_t dg = rgb1.g - rgb2.g;
-    byte_t db = rgb1.b - rgb2.b;
+    uint8_t dr = rgb1.r - rgb2.r;
+    uint8_t dg = rgb1.g - rgb2.g;
+    uint8_t db = rgb1.b - rgb2.b;
 
     return ((dr * dr) + (dg * dg) + (db * db));
 }
@@ -69,11 +69,11 @@ uint_t resolve_row_mid(pixel_line_t pixel_line)
 
     delete_contrast_line(contrast_line);
 
-    // printf("\nhighest_contrast: %u, %u, %u, %u\n",
-    //     highest_contrast_pixels[0],
-    //     highest_contrast_pixels[1],
-    //     highest_contrast_pixels[2],
-    //     highest_contrast_pixels[3]
+    // printf("\nhighest_contrast: %u [%f], %u [%f], %u [%f], %u [%f]\n",
+    //     highest_contrast_pixels[0], highest_contrasts[0],
+    //     highest_contrast_pixels[1], highest_contrasts[1],
+    //     highest_contrast_pixels[2], highest_contrasts[2],
+    //     highest_contrast_pixels[3], highest_contrasts[3]
     // );
 
     uint_t left_pixel = pixel_line.length - 1;
@@ -101,25 +101,21 @@ uint_t resolve_row_mid(pixel_line_t pixel_line)
     return (left_pixel + (right_pixel - left_pixel) / 2);
 }
 
-uint_t* resolve_mid(image_t image, uint_t samples)
+
+uint_t* resolve_mid(uint8_t* image, uint_t width, uint_t height)
 {
     clock_t t1, t2;
     t1 = clock();
+    
+    // printf("%u %u %u", image[0][0][0], image[0][0][1], image[0][0][2]);
 
-    uint_t* mids = malloc(sizeof(uint_t) * image.height);
+    uint_t* mids = malloc(sizeof(uint_t) * height);
 
-    for (uint_t y = 0; y < image.height; y++)
+    for (uint_t y = 0; y < height; y++)
     {
-        for (uint_t x = 0; x < image.width; x++)
-        {
-            rgb_color_t pixel = image.data[y * image.width + x];
-
-            // printf("(%u,\t%u,\t%u)\t", pixel.r, pixel.g, pixel.b);
-        }
-
         pixel_line_t pxline;
-        pxline.data = &(image.data[y * image.width]);
-        pxline.length = image.width;
+        pxline.data = &(image[y * width]);
+        pxline.length = width;
 
         mids[y] = resolve_row_mid(pxline);
         // printf("M: %u\n", mids[y]);
@@ -131,4 +127,3 @@ uint_t* resolve_mid(image_t image, uint_t samples)
 
     return mids;
 }
-

@@ -2,7 +2,7 @@
 
 from ctypes import *
 from PIL import Image, ImageDraw
-import numpy
+import numpy as np
 import os
 import time
 
@@ -12,7 +12,7 @@ class CPicRGB(Structure):
 
     @staticmethod
     def create(rawRGB):
-        if isinstance(rawRGB, list) or isinstance(rawRGB, tuple) or isinstance(rawRGB, numpy.ndarray):
+        if isinstance(rawRGB, list) or isinstance(rawRGB, tuple) or isinstance(rawRGB, np.ndarray):
             return CPicRGB(rawRGB[0], rawRGB[1], rawRGB[2])
         elif isinstance(rawRGB, dict):
             return CPicRGB(rawRGB['r'], rawRGB['g'], rawRGB['b'])
@@ -63,16 +63,31 @@ class CPicLib:
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.realpath(__file__))
 
-    img = Image.open(os.path.join(root_path, 'image.png'))
-    image = numpy.asarray(img)
+    img = Image.open(os.path.join(root_path, 'image.png')).convert('RGB')
+    image = np.asarray(img, dtype=c_uint8)
     print(image.shape)
     _y, _x, _z = image.shape
-    # str_array = [str(image[y][x]) for y in range(_y) for x in range(_x)]
-
-    cpiclib = CPicLib()
 
     t0 = time.time()
-    result = cpiclib.resolve_mid(image)
+
+    fn = CDLL('libcpiclib').resolve_mid
+    fn.argtypes = [np.ctypeslib.ndpointer(dtype=POINTER(c_uint8), ndim=1, flags='C'), c_uint, c_uint]
+    fn.restype = POINTER(c_uint)
+
+    # print(image)
+
+    width = len(image[0])
+    height = len(image)
+    size = width * height * 3   # height * width * (r + g + b)
+
+    ret = fn(np.reshape(image, size), width, height)
+    result = np.ctypeslib.as_array(ret, shape=(height,))
+
+    # result_arr = np.ctypeslib.as_array(result, shape=(_y,))
+    # print(result_arr)
+
+    # cpiclib = CPicLib()
+
     t1 = time.time()
 
     print("Time: {:.3f}s".format((t1 - t0)))
@@ -80,7 +95,8 @@ if __name__ == '__main__':
     draw = ImageDraw.Draw(img)
 
     for y in range(0, len(image)):
-        mid = result.contents[y]
+        mid = result[y]
+        # print(mid)
 
         draw.line((mid, y) + (mid, y), fill=(255, 0, 0))
 

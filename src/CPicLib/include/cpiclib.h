@@ -1,5 +1,8 @@
 #pragma once
 
+#include <stdint.h>
+#include <inttypes.h>
+
 
 #ifdef WIN32
     #ifdef CPICLIB_EXPORTS
@@ -12,30 +15,16 @@
 #endif
 
 
-typedef unsigned char byte_t;
-
 #ifndef uint_t
 #define uint_t unsigned int
-#endif
-
-#ifndef true
-#define true 1
-#endif
-
-#ifndef false
-#define false 0
-#endif
-
-#ifndef bool_t
-#define bool_t byte_t
 #endif
 
 
 typedef struct
 {
-    byte_t r;
-    byte_t g;
-    byte_t b;
+    uint8_t r;
+    uint8_t g;
+    uint8_t b;
 } rgb_color_t;
 
 typedef struct
@@ -58,4 +47,6 @@ typedef struct
 } contrast_line_t;
 
 extern CPICLIB_EXPORT float contrast(rgb_color_t rgb1, rgb_color_t rgb2);
-extern CPICLIB_EXPORT uint_t* resolve_mid(image_t image, uint_t samples);
+
+extern CPICLIB_EXPORT uint_t* resolve_mid(uint8_t* image, uint_t width, uint_t height);
+extern CPICLIB_EXPORT uint_t* test(uint8_t* row, uint_t width);
