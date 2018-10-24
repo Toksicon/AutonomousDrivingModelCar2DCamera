@@ -23,12 +23,12 @@ static void delete_contrast_line(contrast_line_t line)
 }
 
 
-float contrast(rgb_color_t rgb1, rgb_color_t rgb2)
+float contrast(uint8_t* rgb1, uint8_t* rgb2)
 {
     // https://en.wikipedia.org/wiki/Euclidean_distance
-    uint8_t dr = rgb1.r - rgb2.r;
-    uint8_t dg = rgb1.g - rgb2.g;
-    uint8_t db = rgb1.b - rgb2.b;
+    uint8_t dr = rgb1[0] - rgb2[0];
+    uint8_t dg = rgb1[1] - rgb2[1];
+    uint8_t db = rgb1[2] - rgb2[2];
 
     return ((dr * dr) + (dg * dg) + (db * db));
 }
@@ -39,7 +39,7 @@ contrast_line_t line_contrast(pixel_line_t pixel_line)
 
     for (uint_t i = 0; i < pixel_line.length - 1; i++)
     {
-        contrast_line.data[i] = contrast(pixel_line.data[i], pixel_line.data[i + 1]);
+        contrast_line.data[i] = contrast(pixel_line.data + i, pixel_line.data + i + 1);
     }
 
     return contrast_line;
