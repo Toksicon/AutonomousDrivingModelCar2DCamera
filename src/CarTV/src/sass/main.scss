@@ -1,0 +1,12 @@
+@import './variables';
+@import './bootswatch';
+@import '~bootstrap/scss/bootstrap';
+
+
+#app > .navbar {
+    background: linear-gradient(145deg, #349aed 50%, #34d8ed 100%);
+}
+
+.content {
+    padding: 20px;
+}

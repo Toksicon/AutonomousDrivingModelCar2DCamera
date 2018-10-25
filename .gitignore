@@ -132,3 +132,5 @@ flycheck_*.el
 
 # directories which should be ignored
 build/
+.vscode/
+.idea/
