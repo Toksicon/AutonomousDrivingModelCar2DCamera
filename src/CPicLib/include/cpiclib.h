@@ -20,17 +20,9 @@
 #endif
 
 
-typedef struct
-{
-    uint8_t* data;
-    uint_t length;
-} pixel_line_t;
+// out size: (samples * 2)
+extern CPICLIB_EXPORT void resolve_mid(uint8_t* image, uint_t width, uint_t height, uint_t samples, uint_t* out);
 
-typedef struct
-{
-    float* data;
-    uint_t length;
-} contrast_line_t;
 
-extern CPICLIB_EXPORT float contrast(uint8_t* rgb1, uint8_t* rgb2);
-extern CPICLIB_EXPORT uint_t* resolve_mid(uint8_t* image, uint_t width, uint_t height);
+// out size: (height - 2) * (width - 2)
+extern CPICLIB_EXPORT void sobel_operator(uint8_t* image, uint_t width, uint_t height, uint8_t* out);
