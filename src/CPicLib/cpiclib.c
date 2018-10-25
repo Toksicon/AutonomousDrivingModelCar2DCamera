@@ -5,125 +5,116 @@
 #include <stdlib.h>
 #include <math.h>
 
-#include <time.h>
 
-
-static contrast_line_t create_contrast_line(uint_t length)
+uint_t resolve_row_mid(uint8_t* row, uint_t width)
 {
-    contrast_line_t line;
-    line.data = malloc(length * sizeof(float));
-    line.length = length;
+    float threshold = 50.f;
 
-    return line;
-}
-
-static void delete_contrast_line(contrast_line_t line)
-{
-    free(line.data);
-}
-
-
-float contrast(uint8_t* rgb1, uint8_t* rgb2)
-{
-    // https://en.wikipedia.org/wiki/Euclidean_distance
-    uint8_t dr = rgb1[0] - rgb2[0];
-    uint8_t dg = rgb1[1] - rgb2[1];
-    uint8_t db = rgb1[2] - rgb2[2];
-
-    return ((dr * dr) + (dg * dg) + (db * db));
-}
-
-contrast_line_t line_contrast(pixel_line_t pixel_line)
-{
-    contrast_line_t contrast_line = create_contrast_line(pixel_line.length - 1);
-
-    for (uint_t i = 0; i < pixel_line.length - 1; i++)
-    {
-        contrast_line.data[i] = contrast(pixel_line.data + i, pixel_line.data + i + 1);
-    }
-
-    return contrast_line;
-}
-
-uint_t resolve_row_mid(pixel_line_t pixel_line)
-{
-    contrast_line_t contrast_line = line_contrast(pixel_line);
-
-    // use the highest contrast values with largest distance
-    const uint_t CONTRAST_PROBES = 4;
-    float highest_contrasts[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-    uint_t highest_contrast_pixels[] = { 0, 0, 0, 0 };
-
-    for (uint_t i = 0; i < contrast_line.length; i++)
-    {
-        for (uint_t j = 0; j < CONTRAST_PROBES; j++)
-        {
-            if (contrast_line.data[i] > highest_contrasts[j])
-            {
-                highest_contrasts[j] = contrast_line.data[i];
-                highest_contrast_pixels[j] = i;
-                break;
-            }
-        }
-    }
-
-    delete_contrast_line(contrast_line);
-
-    // printf("\nhighest_contrast: %u [%f], %u [%f], %u [%f], %u [%f]\n",
-    //     highest_contrast_pixels[0], highest_contrasts[0],
-    //     highest_contrast_pixels[1], highest_contrasts[1],
-    //     highest_contrast_pixels[2], highest_contrasts[2],
-    //     highest_contrast_pixels[3], highest_contrasts[3]
-    // );
-
-    uint_t left_pixel = pixel_line.length - 1;
+    uint_t left_pixel = width;
     uint_t right_pixel = 0;
 
-    for (uint_t i = 0; i < CONTRAST_PROBES; i++)
+    for (uint_t i = 0; i < width; i++)
     {
-        if (highest_contrasts[i])
+        float px_contrast = row[i];
+
+        if (px_contrast > threshold)
         {
-            uint_t pixel = highest_contrast_pixels[i];
-
-            if (left_pixel > pixel)
+            if (left_pixel > i)
             {
-                left_pixel = pixel;
+                left_pixel = i;
             }
-
-            if (right_pixel < pixel)
+            else
             {
-                right_pixel = pixel;
+                right_pixel = i;
             }
         }
     }
 
-    // printf("L: %u, R: %u, ", left_pixel, right_pixel);
+    if ((right_pixel - left_pixel) < 50)
+    {
+        return -1;
+    }
+
+    // printf("L: %u, R: %u \n", left_pixel, right_pixel);
     return (left_pixel + (right_pixel - left_pixel) / 2);
 }
 
 
-uint_t* resolve_mid(uint8_t* image, uint_t width, uint_t height)
+void sobel_operator(uint8_t* image, uint_t width, uint_t height, uint8_t* out)
 {
-    clock_t t1, t2;
-    t1 = clock();
-    
-    // printf("%u %u %u", image[0][0][0], image[0][0][1], image[0][0][2]);
+    float sobel_x[3][3] = {
+        {-1,  0,  1},
+        {-2,  0,  2},
+        {-1,  0,  1}
+    };
 
-    uint_t* mids = malloc(sizeof(uint_t) * height);
+    float sobel_y[3][3] = {
+        {-1, -2, -1},
+        { 0,  0,  0},
+        { 1,  2,  1}
+    };
 
-    for (uint_t y = 0; y < height; y++)
+    for (uint_t x = 1; x < width - 1; x++)
     {
-        pixel_line_t pxline;
-        pxline.data = &(image[y * width]);
-        pxline.length = width;
+        for (uint_t y = 1; y < height - 1; y++)
+        {
+            double pixel_x = (
+                  (sobel_x[0][0] * image[((y - 1) * width + (x - 1))])
+                + (sobel_x[0][1] * image[((y - 1) * width +    x   )])
+                + (sobel_x[0][2] * image[((y - 1) * width + (x + 1))])
 
-        mids[y] = resolve_row_mid(pxline);
-        // printf("M: %u\n", mids[y]);
+                + (sobel_x[1][0] * image[(y * width + (x - 1))])
+                + (sobel_x[1][1] * image[(y * width +    x   )])
+                + (sobel_x[1][2] * image[(y * width + (x + 1))])
+
+                + (sobel_x[2][0] * image[((y + 1) * width + (x - 1))])
+                + (sobel_x[2][1] * image[((y + 1) * width +    x   )])
+                + (sobel_x[2][2] * image[((y + 1) * width + (x + 1))])
+            );
+
+            double pixel_y = (
+                  (sobel_y[0][0] * image[((y - 1) * width + (x - 1))])
+                + (sobel_y[0][1] * image[((y - 1) * width +    x   )])
+                + (sobel_y[0][2] * image[((y - 1) * width + (x + 1))])
+
+                + (sobel_y[1][0] * image[(y * width + (x - 1))])
+                + (sobel_y[1][1] * image[(y * width +    x   )])
+                + (sobel_y[1][2] * image[(y * width + (x + 1))])
+
+                + (sobel_y[2][0] * image[((y + 1) * width + (x - 1))])
+                + (sobel_y[2][1] * image[((y + 1) * width +    x   )])
+                + (sobel_y[2][2] * image[((y + 1) * width + (x + 1))])
+            );
+
+            uint8_t val = (uint8_t)ceil(sqrt((pixel_x * pixel_x) + (pixel_y * pixel_y)));
+
+            out[(y - 1) * (width - 2) + (x - 1)] = val;
+        }
+    }
+}
+
+
+void resolve_mid(uint8_t* image, uint_t width, uint_t height, uint_t samples, uint_t* out)
+{
+    if (samples < 2) {
+        fprintf(stderr, "At least 2 samples required!");
+        return;
     }
 
-    t2 = clock();
-    float diff = ((float)(t2 - t1) / CLOCKS_PER_SEC);
-    printf("Time: %.3fs\n", diff);
+    uint_t* mids = malloc(sizeof(uint_t) * height);
+    float nth_sample = height / (float)samples;
 
-    return mids;
+    // always resolve first and last line
+    out[0] = 0;
+    out[1] = resolve_row_mid(image, width);
+    out[samples - 2] = height;
+    out[samples - 1] = resolve_row_mid(image + (height - 1) * width, width);
+
+    for (uint_t i = 1; i < samples; i++)
+    {
+        uint_t line = ((uint_t)(nth_sample * i));
+        out[i * 2] = line;
+        out[i * 2 + 1] = resolve_row_mid(image + line * width, width);
+    }
+    
 }
