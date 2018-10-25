@@ -31,16 +31,16 @@ void loop() {
   double pulselength = map(-35, -35, 35, SERVOMAX, SERVOMIN);
   Serial.print(pulselength); Serial.println(" = Left");
   pwm.setPWM(SERVONUM, 0, pulselength);
-  delay(1000);
+  delay(5000);
 
   pulselength = map(0, -35, 35, SERVOMAX, SERVOMIN);
   Serial.print(pulselength); Serial.println(" = Center");
   pwm.setPWM(SERVONUM, 0, pulselength);
-  delay(1000);
+  delay(5000);
 
   pulselength = map(35, -35, 35, SERVOMAX, SERVOMIN);
   Serial.print(pulselength); Serial.println(" = Right");
   pwm.setPWM(SERVONUM, 0, pulselength);
-  delay(1000);
+  delay(5000);
   
 }
