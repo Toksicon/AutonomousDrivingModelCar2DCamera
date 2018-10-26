@@ -1,7 +1,6 @@
 {
   "name": "cartv",
   "description": "A web interface for car model debugging.",
-
   "scripts": {
     "build": "npm run prod",
     "prod": "cross-env NODE_ENV=production npm run clean && webpack --config config/webpack.config.prod.js",
@@ -10,7 +9,6 @@
     "clean": "rimraf static",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-
   "devDependencies": {
     "axios": "^0.18.0",
     "bootstrap": "^4.1.3",

@@ -130,6 +130,8 @@ flycheck_*.el
 # directory configuration
 .dir-locals.el
 
+
+
 # directories which should be ignored
 build/
 .vscode/

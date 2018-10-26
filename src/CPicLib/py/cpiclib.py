@@ -9,15 +9,23 @@ import time
 
 class CPicLib:
     def __init__(self, dll='libcpiclib'):
-        self._dll = CDLL(dll)
+        dll_path = os.path.dirname(os.path.realpath(__file__))
+
+        if os.name == 'nt':
+            dll_path = os.path.join(dll_path, '../build/' + dll + '.dll')
+        else:
+            dll_path = os.path.join(dll_path, '../build/' + dll + '.so')
+
+        dll_path = os.path.abspath(dll_path)
+        self._dll = CDLL(dll_path)
 
         # (data, width, height) -> rgb[]
         self._dll.resolve_mid.argtypes = [
             np.ctypeslib.ndpointer( # data
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS'),
-            c_uint, # width
-            c_uint, # height
-            c_uint, # samples
+            c_uint,  # width
+            c_uint,  # height
+            c_uint,  # samples
             np.ctypeslib.ndpointer( # out
                 dtype=c_uint, ndim=1, flags='C_CONTIGUOUS')
         ]
@@ -26,8 +34,8 @@ class CPicLib:
         self._dll.sobel_operator.argtypes = [
             np.ctypeslib.ndpointer( # data
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS'),
-            c_uint, # width
-            c_uint, # height
+            c_uint,  # width
+            c_uint,  # height
             np.ctypeslib.ndpointer( # out
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS')
         ]
@@ -47,7 +55,7 @@ class CPicLib:
             mid = (output[i * 2], output[i * 2 + 1])
 
             if mid[1] < width:
-                mids.append(mid)
+                mids.append((int(mid[0]), int(mid[1])))
 
         return mids
 
@@ -60,6 +68,7 @@ class CPicLib:
         output = np.empty(dtype=c_uint8, shape=((height - 2) * (width - 2),))
         self._dll.sobel_operator(data, width, height, output)
         return np.reshape(output, (height - 2, width - 2))
+
 
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.realpath(__file__))
