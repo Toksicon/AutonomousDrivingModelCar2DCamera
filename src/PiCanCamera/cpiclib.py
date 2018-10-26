@@ -8,24 +8,16 @@ import time
 
 
 class CPicLib:
-    def __init__(self, dll='libcpiclib'):
-        dll_path = os.path.dirname(os.path.realpath(__file__))
-
-        if os.name == 'nt':
-            dll_path = os.path.join(dll_path, '../build/' + dll + '.dll')
-        else:
-            dll_path = os.path.join(dll_path, '../build/' + dll + '.so')
-
-        dll_path = os.path.abspath(dll_path)
-        self._dll = CDLL(dll_path)
+    def __init__(self, dll='libcpiclib.so'):
+        self._dll = CDLL(os.path.abspath(dll))
 
         # (data, width, height) -> rgb[]
         self._dll.resolve_mid.argtypes = [
             np.ctypeslib.ndpointer( # data
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS'),
-            c_uint,  # width
-            c_uint,  # height
-            c_uint,  # samples
+            c_uint, # width
+            c_uint, # height
+            c_uint, # samples
             np.ctypeslib.ndpointer( # out
                 dtype=c_uint, ndim=1, flags='C_CONTIGUOUS')
         ]
@@ -34,8 +26,8 @@ class CPicLib:
         self._dll.sobel_operator.argtypes = [
             np.ctypeslib.ndpointer( # data
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS'),
-            c_uint,  # width
-            c_uint,  # height
+            c_uint, # width
+            c_uint, # height
             np.ctypeslib.ndpointer( # out
                 dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS')
         ]
@@ -65,7 +57,7 @@ class CPicLib:
             mid = (output[i * 2], output[i * 2 + 1])
 
             if mid[1] < width:
-                mids.append((int(mid[0]), int(mid[1])))
+                mids.append(mid)
 
         return mids
 
@@ -94,7 +86,7 @@ class CPicLib:
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.realpath(__file__))
 
-    img = Image.open(os.path.join(root_path, 'image.png')).convert('RGB')
+    img = Image.open(os.path.join(root_path, 'image.png')).convert('L')
     image = np.asarray(img, dtype=c_uint8)
     # print(image)
 
@@ -102,8 +94,6 @@ if __name__ == '__main__':
 
     t0 = time.time()
 
-    image = cpiclib.rgb_to_grayscale(image)
-    Image.fromarray(image).show()
     sobel_result = cpiclib.sobel_operator(image)
     mids = cpiclib.resolve_mid(sobel_result)
 

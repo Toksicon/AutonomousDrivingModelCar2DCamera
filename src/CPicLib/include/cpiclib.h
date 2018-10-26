@@ -26,3 +26,7 @@ extern CPICLIB_EXPORT void resolve_mid(uint8_t* image, uint_t width, uint_t heig
 
 // out size: (height - 2) * (width - 2)
 extern CPICLIB_EXPORT void sobel_operator(uint8_t* image, uint_t width, uint_t height, uint8_t* out);
+
+// out size: width * height
+// image size: width * height * 3 for RGB values
+extern CPICLIB_EXPORT void rgb_to_grayscale(uint8_t* image, uint_t width, uint_t height, uint8_t* out);
