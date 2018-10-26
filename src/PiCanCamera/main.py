@@ -27,6 +27,7 @@ def send_messages_for_image_samples(analyzed_samples, image_id):
         bus.send(message)
 
         sample_number += 1
+        time.sleep(1)
 
 
 endian_system = "little"

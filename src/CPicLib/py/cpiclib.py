@@ -41,6 +41,16 @@ class CPicLib:
         ]
         self._dll.sobel_operator.restype = None
 
+        self._dll.rgb_to_grayscale.argtypes = [
+            np.ctypeslib.ndpointer(  # data
+                dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS'),
+            c_uint,  # width
+            c_uint,  # height
+            np.ctypeslib.ndpointer(  # out
+                dtype=c_uint8, ndim=1, flags='C_CONTIGUOUS')
+        ]
+        self._dll.rgb_to_grayscale.restype = None
+
     def resolve_mid(self, image, samples=10):
         width = len(image[0])
         height = len(image)
@@ -59,6 +69,17 @@ class CPicLib:
 
         return mids
 
+    def rgb_to_grayscale(self, image):
+        # uint8_t* image, uint_t width, uint_t height, uint8_t* out
+        width = len(image[0])
+        height = len(image)
+        size = width * height * 3
+        data = np.reshape(image, size)
+
+        output = np.empty(dtype=c_uint8, shape=(height * width,))
+        self._dll.rgb_to_grayscale(data, width, height, output)
+        return np.reshape(output, (height, width))
+
     def sobel_operator(self, image):
         width = len(image[0])
         height = len(image)
@@ -73,7 +94,7 @@ class CPicLib:
 if __name__ == '__main__':
     root_path = os.path.dirname(os.path.realpath(__file__))
 
-    img = Image.open(os.path.join(root_path, 'image.png')).convert('L')
+    img = Image.open(os.path.join(root_path, 'image.png')).convert('RGB')
     image = np.asarray(img, dtype=c_uint8)
     # print(image)
 
@@ -81,6 +102,8 @@ if __name__ == '__main__':
 
     t0 = time.time()
 
+    image = cpiclib.rgb_to_grayscale(image)
+    Image.fromarray(image).show()
     sobel_result = cpiclib.sobel_operator(image)
     mids = cpiclib.resolve_mid(sobel_result)
 
