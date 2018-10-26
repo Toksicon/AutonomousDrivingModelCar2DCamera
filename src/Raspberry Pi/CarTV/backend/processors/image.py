@@ -23,7 +23,7 @@ def processor():
                 gray_image = cpiclib.rgb_to_grayscale(captured_image)
                 edge_image = cpiclib.sobel_operator(gray_image)
 
-                mid_points = cpiclib.resolve_mid(edge_image)
+                mid_points = cpiclib.detect_mid(edge_image)
 
                 x_points = [int(p[0]) for p in mid_points]
 
@@ -36,7 +36,7 @@ def processor():
                         {'name': 'Grayscale', 'data': gray_image.tolist(), 'format': 'grayscale'},
                         {'name': 'Sobel Operator', 'data': edge_image.tolist(), 'format': 'grayscale'}
                     ],
-                    'median': mids
+                    'median': mid_points
                 })
 
                 time.sleep(2)
