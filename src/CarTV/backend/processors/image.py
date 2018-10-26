@@ -17,19 +17,23 @@ def processor():
     cpiclib = CPicLib()
 
     while True:
-        img = Image.open(os.path.join(root_path, '../../../CPicLib/py/image.png')).convert('L')
-        image = np.asarray(img, dtype=np.uint8)
+        try:
+            img = Image.open(os.path.join(root_path, '../../../CPicLib/py/image.png'))
+            captured_image = np.asarray(img.convert('RGB'), dtype=np.uint8)
+            image = np.asarray(img.convert('L'), dtype=np.uint8)
 
-        sobel_result = cpiclib.sobel_operator(image)
-        mids = cpiclib.resolve_mid(sobel_result)
+            sobel_result = cpiclib.sobel_operator(image)
+            mids = cpiclib.resolve_mid(sobel_result)
 
-        socketio.emit('monitor', {
-            'images': [
-                {'name': 'Captured', 'data': image.tolist()},
-                {'name': 'Sobel Operator', 'data': sobel_result.tolist()}
-            ],
-            'median': mids
-        })
+            socketio.emit('monitor', {
+                'images': [
+                    {'name': 'Captured', 'data': captured_image.tolist(), 'format': 'rgb'},
+                    {'name': 'Sobel Operator', 'data': sobel_result.tolist(), 'format': 'grayscale'}
+                ],
+                'median': mids
+            })
+        except:
+            pass
 
         time.sleep(1)
 

@@ -2,7 +2,7 @@
 // access state through $store.state.monitor.<property>
 function initialState() {
     return {
-        record_limit: 10,
+        record_limit: 2,
         records: [],
     };
 
