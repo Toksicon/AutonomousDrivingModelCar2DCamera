@@ -17,33 +17,28 @@ def processor():
     image_id = 1
     with Can() as can:
         while True:
-            try:
-                captured_image = camera.capture()
+            captured_image = camera.capture()
 
-                gray_image = cpiclib.rgb_to_grayscale(captured_image)
-                edge_image = cpiclib.sobel_operator(gray_image)
+            gray_image = cpiclib.grayscale_filter(captured_image)
+            edge_image = cpiclib.sobel_operator(gray_image)
 
-                mid_points = cpiclib.detect_mid(edge_image)
+            mid_points = cpiclib.detect_mid(edge_image)
 
-                x_points = [int(p[0]) for p in mid_points]
+            x_points = [int(p[0]) for p in mid_points]
 
-                can.send_messages_for_image_samples(x_points, image_id)
-                image_id += 1
+            can.send_messages_for_image_samples(x_points, image_id)
+            image_id += 1
 
-                socketio.emit('monitor', {
-                    'images': [
-                        {'name': 'Captured', 'data': captured_image.tolist(), 'format': 'rgb'},
-                        {'name': 'Grayscale', 'data': gray_image.tolist(), 'format': 'grayscale'},
-                        {'name': 'Sobel Operator', 'data': edge_image.tolist(), 'format': 'grayscale'}
-                    ],
-                    'median': mid_points
-                })
+            socketio.emit('monitor', {
+                'images': [
+                    {'name': 'Captured', 'data': captured_image.tolist(), 'format': 'rgb'},
+                    {'name': 'Grayscale', 'data': gray_image.tolist(), 'format': 'grayscale'},
+                    {'name': 'Sobel Operator', 'data': edge_image.tolist(), 'format': 'grayscale'}
+                ],
+                'median': mid_points
+            })
 
-                time.sleep(2)
-
-            except Exception as e:
-                print(e)
-                exit()
+            time.sleep(2)
 
 
 if __name__ == '__main__':

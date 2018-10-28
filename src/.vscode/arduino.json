@@ -1,5 +1,0 @@
-{
-    "board": "arduino:avr:uno",
-    "port": "COM10",
-    "sketch": "Arduino\\canreader\\canreader.ino"
-}

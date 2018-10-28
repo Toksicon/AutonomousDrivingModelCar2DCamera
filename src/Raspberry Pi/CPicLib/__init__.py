@@ -55,7 +55,19 @@ class CPicLib:
 
         self._dll.prewitt_operator.argtypes = operator_argtypes
         self._dll.sobel_operator.argtypes = operator_argtypes
-        self._dll.rgb_to_grayscale.argtypes = operator_argtypes
+        self._dll.canny_edge_detection.argtypes = [
+            image_ptr,  # data
+            c_uint,     # width
+            c_uint,     # height
+
+            c_int,      # tmin
+            c_int,      # tmax
+
+            c_float,    # sigma
+
+            image_ptr   # out
+        ]
+        self._dll.grayscale_filter.argtypes = operator_argtypes
 
     def _image_shape(self, image):
         width = len(image[0])
@@ -113,6 +125,19 @@ class CPicLib:
 
         return np.reshape(output, (height, width))
 
+    ''' TODO: comments
+    '''
+    def canny_edge_detection(self, image, tmin=45, tmax=50, sigma=1.0):
+        (width, height, size) = self._image_shape(image)
+
+        output = np.empty(dtype=c_uint8, shape=(size,))
+        self._dll.canny_edge_detection(
+            np.reshape(image, size), width, height,
+            c_int(tmin), c_int(tmax), c_float(sigma),
+            output)
+
+        return np.reshape(output, (height, width))
+
     ''' Detects mids of the road for a given count of samples.
         @param image     2-dimensional numpy array [y][x] (grayscale).
         @param samples   Amount of samples to take from the image (samples < (height - 2))
@@ -143,11 +168,11 @@ class CPicLib:
 
         @return     2-dimensional numpy array [y][x] (grayscale).
     '''
-    def rgb_to_grayscale(self, image):
+    def grayscale_filter(self, image):
         (width, height, size) = self._image_shape(image)
 
         output = np.empty(dtype=c_uint8, shape=(size,))
-        self._dll.rgb_to_grayscale(
+        self._dll.grayscale_filter(
             np.reshape(image, size * 3), width, height,
             output)
 
@@ -165,9 +190,9 @@ if __name__ == '__main__':
 
     t0 = time.time()
 
-    image = cpiclib.rgb_to_grayscale(image)
+    image = cpiclib.grayscale_filter(image)
     # Image.fromarray(image).show()
-    sobel_result = cpiclib.sobel_operator(image)
+    sobel_result = cpiclib.canny_edge_detection(image, tmin=45, tmax=50, sigma=1)
     mids = cpiclib.detect_mid(sobel_result)
 
     t1 = time.time()
