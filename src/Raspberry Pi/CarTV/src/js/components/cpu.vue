@@ -53,20 +53,20 @@ export default {
 
     computed: {
         freq_current_list() {
-            return this.$store.state.cpu.records.map(
-                (record) => record.freq.current
+            return this.$store.state.cpu_freq.records.map(
+                (record) => record.current
             );
         },
-        
+
         freq_min_list() {
-            return this.$store.state.cpu.records.map(
-                (record) => record.freq.min
+            return this.$store.state.cpu_freq.records.map(
+                (record) => record.min
             );
         },
-        
+
         freq_max_list() {
-            return this.$store.state.cpu.records.map(
-                (record) => record.freq.max
+            return this.$store.state.cpu_freq.records.map(
+                (record) => record.max
             );
         },
 

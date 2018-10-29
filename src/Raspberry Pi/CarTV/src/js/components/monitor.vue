@@ -39,4 +39,3 @@ div.image {
     margin-bottom: 10px;
 }
 </style>
-

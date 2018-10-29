@@ -1,5 +1,5 @@
 // initial state, as return value, because copy is required
-// access state through $store.state.monitor.<property>
+// access state through $store.state.virtual_memory.<property>
 function initialState() {
     return {
         record_limit: 10,
@@ -7,7 +7,8 @@ function initialState() {
     };
 
     /* record = {
-        // ...
+        total
+        available
     }
     */
 }
@@ -18,13 +19,13 @@ const getters = {
 };
 
 // actions (async, usually call mutations)
-// call with $store.dispatch('monitor/<...>'[, args...])
+// call with $store.dispatch('virtual_memory/<...>'[, args...])
 const actions = {
     // ...
 };
 
 // mutations (can manipulate store)
-// call with $store.commit('cpu/<...>', value)
+// call with $store.commit('virtual_memory/<...>', value)
 const mutations = {
     // resets to initial state
     reset(state) {

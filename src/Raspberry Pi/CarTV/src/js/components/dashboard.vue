@@ -10,13 +10,22 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4 d-flex">
+    <div class="col-12 col-md-4">
+        <div class="card flex-fill w-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Memory</h5>
+            </div>
+            <div class="card-body px-4">
+                <virtual-memory-component />
+            </div>
+        </div>
+        <br>
         <div class="card flex-fill w-100">
             <div class="card-header">
                 <h5 class="card-title mb-0">CPU</h5>
             </div>
             <div class="card-body px-4">
-                <!-- <cpu-component /> -->
+                <cpu-component />
             </div>
         </div>
     </div>
@@ -24,13 +33,16 @@
 </template>
 
 <script>
-// import CpuComponent from './cpu';
+import CpuComponent from './cpu';
 import MonitorComponent from './monitor';
+
+import VirtualMemoryComponent from './telemetry/virtual_memory/component.vue';
 
 export default {
     components: {
-        // CpuComponent,
+        CpuComponent,
         MonitorComponent,
+        VirtualMemoryComponent,
     },
 };
 </script>

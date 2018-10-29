@@ -19,7 +19,7 @@ export const routes = [
     {
         name: 'Telemetry',
         path: '/telemetry',
-        component: { template: 'Telemetry' },
+        component: (resolve) => require(['./components/telemetry'], resolve),
     }
 ];
 
