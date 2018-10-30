@@ -36,7 +36,7 @@ def processor():
                 image_id += 1
 
 
-                if last_emit < time.time() - 0.1:
+                if last_emit < time.time() - 0.4:
                     socketio.emit('monitor', {
                         'images': [
                             {

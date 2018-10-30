@@ -29,7 +29,7 @@ class Camera:
     def capture(self):
         if self._camera:
             image_array = np.empty((self._camera.resolution[1], self._camera.resolution[0], 3), dtype=np.uint8)
-            self._camera.capture(image_array, 'rgb')
+            self._camera.capture(image_array, 'rgb', use_vide_port=True)
             return image_array
         else:
             return np.empty((1, 1, 3), dtype=np.uint8)
