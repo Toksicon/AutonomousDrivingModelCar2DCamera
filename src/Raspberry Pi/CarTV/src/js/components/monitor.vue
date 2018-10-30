@@ -18,13 +18,11 @@ export default {
 
     computed: {
         record() {
-            const records = this.$store.state.monitor.records;
-
-            return ((records.length > 0) ? records[records.length - 1] : null);
+            return this.$store.state.monitor;
         },
 
         images() {
-            return this.record ? this.record.images : [];
+            return this.record.images;
         }
     },
 };

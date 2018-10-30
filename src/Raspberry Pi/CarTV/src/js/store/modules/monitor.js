@@ -2,8 +2,8 @@
 // access state through $store.state.monitor.<property>
 function initialState() {
     return {
-        record_limit: 2,
-        records: [],
+        images: [],
+        median: [],
     };
 
     /* record = {
@@ -43,11 +43,8 @@ const mutations = {
     },
 
     push(state, update) {
-        state.records.push(update);
-
-        while (state.records.length > state.record_limit) {
-            state.records.shift();
-        }
+        state.images = update.images;
+        state.median = update.median;
     },
 };
 

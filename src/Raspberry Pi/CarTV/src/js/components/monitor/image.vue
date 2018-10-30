@@ -25,7 +25,48 @@ export default {
     },
 
     methods: {
+        _grayscaleImageData(image, width, height, imageData) {
+            let i = 0;
+            let offset = 0;
+            for (let y = 0; y < height; y++)
+            {
+                for (let x = 0; x < width; x++)
+                {
+                    imageData.data[i + 0] = image[offset];  // red
+                    imageData.data[i + 1] = image[offset];  // green
+                    imageData.data[i + 2] = image[offset];  // blue
+                    imageData.data[i + 3] = 255;  // alpha
+
+                    i += 4;
+                    offset++;
+                }
+            }
+
+            return imageData;
+        },
+
+        _rgbImageData(image, width, height, imageData) {
+            let i = 0;
+            let offset = 0;
+            for (let y = 0; y < height; y++)
+            {
+                for (let x = 0; x < width; x++)
+                {
+                    imageData.data[i + 0] = image[offset];      // red
+                    imageData.data[i + 1] = image[offset + 1];  // green
+                    imageData.data[i + 2] = image[offset + 2];  // blue
+                    imageData.data[i + 3] = 255;                // alpha
+
+                    i += 4;
+                    offset += 3;
+                }
+            }
+
+            return imageData;
+        },
+
         _updateImage() {
+            console.time('_updateImage');
             const image = new Uint8Array(this.imageData.data);
             const width = this.imageData.width;
             const height = this.imageData.height;
@@ -34,46 +75,16 @@ export default {
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
-
             const imageData = ctx.createImageData(width, height);
-            const fact = (this.imageData.format == 'rgb') ? 3
-                            : ((this.imageData.format == 'rgba') ? 4 : 1);
 
-
-            let i = 0;
-            let offset = 0;
-            for (let y = 0; y < height; y++)
-            {
-                for (let x = 0; x < width; x++)
-                {
-                    let rgba = [];
-
-                    if (this.imageData.format == 'grayscale')
-                    {
-                        const grayscale = image[y * width + x];
-                        rgba = [grayscale, grayscale, grayscale, 255];
-                    }
-                    else if (this.imageData.format == 'rgb' || this.imageData.format == 'rgba')
-                    {
-                        rgba = [
-                            image[offset],
-                            image[offset + 1],
-                            image[offset + 2],
-                            (this.imageData.format == 'rgb') ? 255 : image[y * width + x + 3],
-                        ];
-                    }
-
-                    imageData.data[i + 0] = rgba[0];  // red
-                    imageData.data[i + 1] = rgba[1];  // green
-                    imageData.data[i + 2] = rgba[2];  // blue
-                    imageData.data[i + 3] = rgba[3];  // alpha
-
-                    i += 4;
-                    offset += fact;
-                }
+            if (this.imageData.format == 'rgb') {
+                ctx.putImageData(this._rgbImageData(image, width, height, imageData), 0, 0)
+            } else if (this.imageData.format == 'grayscale') {
+                ctx.putImageData(this._grayscaleImageData(image, width, height, imageData), 0, 0);
+            } else {
+                console.error('Unknown imageDate format!');
+                return;
             }
-
-            ctx.putImageData(imageData, 0, 0);
 
             //////////////////////////////////////////////////////////////////////////////////
             // draw overlay
@@ -97,6 +108,7 @@ export default {
             });
 
             this.$refs.img.src = canvas.toDataURL();
+            console.timeEnd('_updateImage');
         },
     },
 
