@@ -26,9 +26,9 @@ export default {
 
     methods: {
         _updateImage() {
-            const image = this.imageData.data;
-            const width = this.imageData.data[0].length;
-            const height = this.imageData.data.length;
+            const image = new Uint8Array(this.imageData.data);
+            const width = this.imageData.width;
+            const height = this.imageData.height;
 
             const canvas = document.createElement('canvas');
             canvas.width = width;
@@ -36,8 +36,12 @@ export default {
             const ctx = canvas.getContext('2d');
 
             const imageData = ctx.createImageData(width, height);
+            const fact = (this.imageData.format == 'rgb') ? 3
+                            : ((this.imageData.format == 'rgba') ? 4 : 1);
+
 
             let i = 0;
+            let offset = 0;
             for (let y = 0; y < height; y++)
             {
                 for (let x = 0; x < width; x++)
@@ -46,16 +50,17 @@ export default {
 
                     if (this.imageData.format == 'grayscale')
                     {
-                        const grayscale = image[y][x];
+                        const grayscale = image[y * width + x];
                         rgba = [grayscale, grayscale, grayscale, 255];
                     }
                     else if (this.imageData.format == 'rgb' || this.imageData.format == 'rgba')
                     {
-                        rgba = image[y][x];
-                        if (rgba.length == 3)
-                        {
-                            rgba[3] = 255;
-                        }
+                        rgba = [
+                            image[offset],
+                            image[offset + 1],
+                            image[offset + 2],
+                            (this.imageData.format == 'rgb') ? 255 : image[y * width + x + 3],
+                        ];
                     }
 
                     imageData.data[i + 0] = rgba[0];  // red
@@ -64,6 +69,7 @@ export default {
                     imageData.data[i + 3] = rgba[3];  // alpha
 
                     i += 4;
+                    offset += fact;
                 }
             }
 

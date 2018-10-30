@@ -37,6 +37,6 @@ if __name__ == '__main__':
         socketio.start_background_task(target=telemetry.processor)
 
     try:
-        socketio.run(app, host=args.host, port=args.port, debug=args.debug, use_reloader=True)
+        socketio.run(app, host=args.host, port=args.port, debug=args.debug)
     except KeyboardInterrupt:
         exit(0)

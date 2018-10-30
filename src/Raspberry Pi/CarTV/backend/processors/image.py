@@ -12,34 +12,53 @@ from CPicLib import CPicLib
 
 
 def processor():
-    camera = Camera((384, 240))
-    cpiclib = CPicLib()
-    image_id = 1
-    with Can() as can:
-        while True:
-            captured_image = camera.capture()
+    with Camera((384, 240)) as camera:
+        cpiclib = CPicLib()
+        image_id = 1
+        with Can() as can:
+            while True:
+                t0 = time.time()
+                captured_image = camera.capture()
+                t1 = time.time()
+                print("TIME: ", t1 - t0)
 
-            gray_image = cpiclib.grayscale_filter(captured_image)
-            edge_image = cpiclib.sobel_operator(gray_image)
+                print('camera.captured')
+                gray_image = cpiclib.grayscale_filter(captured_image)
+                edge_image = cpiclib.sobel_operator(gray_image)
 
-            mid_points = cpiclib.detect_mid(edge_image)
+                mid_points = cpiclib.detect_mid(edge_image)
 
-            x_points = [int(p[0]) for p in mid_points]
+                x_points = [int(p[0]) for p in mid_points]
 
-            can.send_messages_for_image_samples(x_points, image_id)
-            image_id += 1
+                can.send_messages_for_image_samples(x_points, image_id)
+                image_id += 1
 
-            socketio.emit('monitor', {
-                'images': [
-                    {'name': 'Captured', 'data': captured_image.tolist(), 'format': 'rgb'},
-                    {'name': 'Grayscale', 'data': gray_image.tolist(), 'format': 'grayscale'},
-                    {'name': 'Sobel Operator', 'data': edge_image.tolist(), 'format': 'grayscale'}
-                ],
-                'median': mid_points
-            })
-
-            time.sleep(2)
-
+                socketio.emit('monitor', {
+                    'images': [
+                        {
+                            'name': 'Captured',
+                            'data': captured_image.tobytes(),
+                            'format': 'rgb',
+                            'width': len(captured_image[0]),
+                            'height': len(captured_image)
+                        },
+                        {
+                            'name': 'Grayscale',
+                            'data': gray_image.tobytes(),
+                            'format': 'grayscale',
+                            'width': len(gray_image[0]),
+                            'height': len(gray_image)
+                        },
+                        {
+                            'name': 'Sobel Operator',
+                            'data': edge_image.tobytes(),
+                            'format': 'grayscale',
+                            'width': len(edge_image[0]),
+                            'height': len(edge_image)
+                        }
+                    ],
+                    'median': mid_points
+                })
 
 if __name__ == '__main__':
     processor()

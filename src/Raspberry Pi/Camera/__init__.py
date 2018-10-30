@@ -9,12 +9,25 @@ except:
 
 class Camera:
     def __init__(self, resolution):
+        self._camera = None
+
+        if PiCamera:
+            self._resolution = resolution
+
+    def __enter__(self):
         if PiCamera:
             self._camera = PiCamera()
-            self._camera.resolution = resolution
+            self._camera.resolution = self._resolution
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        if PiCamera:
+            self._camera.close()
+            self._camera = None
 
     def capture(self):
-        if PiCamera:
+        if self._camera:
             image_array = np.empty((self._camera.resolution[1], self._camera.resolution[0], 3), dtype=np.uint8)
             self._camera.capture(image_array, 'rgb')
             return image_array

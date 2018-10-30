@@ -22,6 +22,9 @@ class EmptyCanMessenger:
 ''' CanMessenger implementation is used, when the can module has been loaded.
 '''
 class CanMessenger(EmptyCanMessenger):
+    def __init__(self, can):
+        self._can = can
+
     def send_messages_for_image_samples(self, analyzed_samples, image_id):
         sample_number = 1
         number_of_sample = len(analyzed_samples)
@@ -37,12 +40,12 @@ class CanMessenger(EmptyCanMessenger):
             payload.extend(sample_number.to_bytes(1, self._can._endian_system))
             payload.extend(sample.to_bytes(4, self._can._endian_system))
 
-            message = self._can.Message(is_remote_frame=False, extended_id=False, arbitration_id=0x200,
+            message = can.Message(is_remote_frame=False, extended_id=False, arbitration_id=0x200,
                                 dlc=len(payload), data=payload)
             self._can._bus.send(message)
 
             sample_number += 1
-            time.sleep(1)
+            time.sleep(0.01)
 
 
 class Can:
