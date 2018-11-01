@@ -3,7 +3,7 @@ from flask_socketio import SocketIO
 import re
 
 app = Flask(__name__)
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app, async_mode='gevent')
 
 
 @app.route('/', defaults={'path': ''})

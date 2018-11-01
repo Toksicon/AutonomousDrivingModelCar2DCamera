@@ -1,7 +1,6 @@
 #!/usr/bin/python
 
 from ctypes import *
-from PIL import Image, ImageDraw
 import numpy as np
 import os
 import time
@@ -180,6 +179,8 @@ class CPicLib:
 
 
 if __name__ == '__main__':
+    from PIL import Image, ImageDraw
+
     root_path = os.path.dirname(os.path.realpath(__file__))
 
     img = Image.open(os.path.join(root_path, 'samples/image.png')).convert('RGB')

@@ -1,24 +1,31 @@
 #!/usr/bin/python
 import argparse
+import subprocess
+import sys
 
-from CarTV.backend.server import app, socketio
-from CarTV.backend.processors import image, telemetry
+
+def start_car_tv():
+    call = [sys.executable, 'CarTV/app.py']
+    call.extend(sys.argv[1:])
+
+    return subprocess.Popen(call)
+
+
+def start_camera():
+    call = [sys.executable, 'Camera/app.py']
+    call.extend(sys.argv[1:])
+
+    return subprocess.Popen(call)
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='CarTV & Camera Controller')
 
+    # TODO: disable CarTV option
+
     # debug
     parser.add_argument('-d', '--debug', action='store_true',
         help='Enables debug mode')
-
-    # host (CarTV only)
-    parser.add_argument('--host', action='store', default='0.0.0.0',
-        help='Specify the host for CarTV')
-
-    # port (CarTV only)
-    parser.add_argument('--port', action='store', type=int, default=5000,
-        help='Specify the port for CarTV')
 
     # image processor
     parser.add_argument('--process-images', type=int, default=1,
@@ -30,13 +37,26 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    if args.process_images:
-        socketio.start_background_task(target=image.processor)
-
-    if args.process_telemetry:
-        socketio.start_background_task(target=telemetry.processor)
+    car_tv = None
+    camera = None
 
     try:
-        socketio.run(app, host=args.host, port=args.port, debug=args.debug)
-    except KeyboardInterrupt:
-        exit(0)
+        if args.process_images:
+            camera = start_camera()
+
+        car_tv = start_car_tv()
+
+        if camera:
+            camera.wait()
+
+        if car_tv:
+            car_tv.wait()
+
+    except Exception as e:
+        print(e)
+
+        if car_tv:
+            car_tv.terminate()
+
+        if camera:
+            camera.terminate()
