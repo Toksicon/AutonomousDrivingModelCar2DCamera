@@ -38,7 +38,4 @@ if __name__ == '__main__':
     if args.process_telemetry:
         socketio.start_background_task(target=telemetry.processor)
 
-    try:
-        socketio.run(app, host=args.host, port=args.port, debug=args.debug)
-    except KeyboardInterrupt:
-        exit(0)
+    socketio.run(app, host=args.host, port=args.port, debug=args.debug, use_reloader=True)

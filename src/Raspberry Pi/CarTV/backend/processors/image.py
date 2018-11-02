@@ -1,6 +1,9 @@
 import os
+import pickle
 import sys
 import time
+
+from pymemcache.client import base
 
 from ..server import socketio
 
@@ -12,8 +15,58 @@ from CPicLib import CPicLib
 
 def processor():
     cpiclib = CPicLib()
-    image_id = 1
-    last_emit = 0
+
+    client = base.Client(('localhost', 11211))
+    last_image_id = 0
+
+    # with Can() as can:
+    while True:
+        raw_data = client.get('captured_image')
+        if raw_data:
+            img = pickle.loads(raw_data)
+            gray_image = cpiclib.grayscale_filter(img['data'])
+            edge_image = cpiclib.sobel_operator(gray_image)
+
+            mid_points = cpiclib.detect_mid(edge_image)
+
+            x_points = [int(p[0]) for p in mid_points]
+            # can.send_messages_for_image_samples(x_points, img['id'])
+
+            if img['id'] != last_image_id:
+                print('emit image {}'.format(img['id']))
+                img['data'] = img['data'].tobytes()
+                socketio.emit('monitor', {
+                    'images': [
+                        {
+                            'name': 'Captured',
+                            'data': img['data'],
+                            'format': img['format'],
+                            'width': img['width'],
+                            'height': img['height']
+                        }#,
+                        # {
+                        #     'name': 'Grayscale',
+                        #     'data': gray_image.tobytes(),
+                        #     'format': 'grayscale',
+                        #     'width': img['width'],
+                        #     'height': img['height']
+                        # },
+                        # {
+                        #     'name': 'Sobel Operator',
+                        #     'data': edge_image.tobytes(),
+                        #     'format': 'rgb',
+                        #     'width': img['width'],
+                        #     'height': img['height']
+                        # }
+                    ],
+                    'median': mid_points
+                })
+
+                last_image_id = img['id']
+
+        time.sleep(0.5)
+
+
 
     # TODO: get image from memcached
 

@@ -1,3 +1,4 @@
+from enum import Enum
 import numpy as np
 
 try:
@@ -5,6 +6,11 @@ try:
 except:
     PiCamera = None
     print('Failed to load picamera module!')
+
+
+class Formats(Enum):
+    grayscale = 0
+    rgb = 1
 
 
 class Camera:

@@ -22,4 +22,4 @@ export default new Vuex.Store({
     },
 });
 
-export const stores = ['monitor', 'cpu_freq', 'virtual_memory'];
+export const stores = ['cpu_freq', 'virtual_memory'];

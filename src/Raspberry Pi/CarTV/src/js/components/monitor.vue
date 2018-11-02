@@ -16,14 +16,34 @@ export default {
         ImageComponent,
     },
 
+    data() {
+        return {
+            renderedImages: 0,
+        };
+    },
+
     computed: {
         record() {
-            return this.$store.state.monitor;
+            const rec = this.$store.state.monitor;
+            this.renderedImages = 0;
+            return rec;
         },
 
         images() {
             return this.record.images;
-        }
+        },
+    },
+
+    mounted() {
+        this.$on('rendered_image', () => {
+            this.renderedImages++;
+            console.log('rendered: ' + this.renderedImages);
+
+            if (this.renderedImages == this.images.length)
+            {
+                this.$store.dispatch('monitor/update');
+            }
+        })
     },
 };
 </script>

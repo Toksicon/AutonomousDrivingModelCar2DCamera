@@ -1,6 +1,6 @@
 <template>
 <div>
-    <img ref="img" />
+    <canvas ref="img"></canvas>
 </div>
 </template>
 
@@ -19,9 +19,9 @@ export default {
             this._updateImage();
         },
 
-        points() {
-            this._updateImage();
-        },
+        // points() {
+        //     this._updateImage();
+        // },
     },
 
     methods: {
@@ -66,12 +66,13 @@ export default {
         },
 
         _updateImage() {
+            console.warn('update');
             console.time('_updateImage');
             const image = new Uint8Array(this.imageData.data);
             const width = this.imageData.width;
             const height = this.imageData.height;
 
-            const canvas = document.createElement('canvas');
+            const canvas = this.$refs.img;
             canvas.width = width;
             canvas.height = height;
             const ctx = canvas.getContext('2d');
@@ -107,8 +108,11 @@ export default {
                 ctx.fillRect(point[1] - 2, point[0] - 2, 5, 5);
             });
 
-            this.$refs.img.src = canvas.toDataURL();
+            // this.$refs.img.src = canvas.toDataURL();
             console.timeEnd('_updateImage');
+
+            this.$store.dispatch('monitor/update');
+            // this.$emit('rendered_image');
         },
     },
 
