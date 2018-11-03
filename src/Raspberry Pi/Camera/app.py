@@ -3,11 +3,12 @@ import argparse
 import pickle
 import json
 import numpy as np
-import time
 
 from pymemcache.client import base
+from time import time
 
 from camera import Camera
+from logger import logger, logging
 
 
 if __name__ == '__main__':
@@ -19,16 +20,21 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
+    if args.debug:
+        logger.setLevel(logging.DEBUG)
+
     image_id = 1
     client = base.Client(('localhost', 11211))
 
     with Camera((384, 240)) as camera:
         while True:
-            # print(image_id)
-            # t0 = time.time()
+            logger.info('>>> image {}'.format(image_id))
+
+            t = time()
             captured_image = camera.capture()
-            # t1 = time.time()
-            # print('capture', t1 - t0)
+            logger.debug('capturing time: {}'.format(time() - t))
+
+            t = time()
             data = {
                 'id': image_id,
                 'format': 'rgb',
@@ -36,11 +42,8 @@ if __name__ == '__main__':
                 'width': len(captured_image[0]),
                 'height': len(captured_image)
             }
-            # t2 = time.time()
-            # print('serialize', t2 - t1)
 
             client.set('captured_image', pickle.dumps(data), 1)
-            
-            # t3 = time.time()
-            # print('set', t3 - t2)
+            logger.debug('serialization time: {}'.format(time() - t))
+
             image_id += 1
