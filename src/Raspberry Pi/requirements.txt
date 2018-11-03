@@ -3,5 +3,6 @@ flask-socketio
 gevent
 gevent-websocket
 numpy
+pillow
 psutil
 pymemcache

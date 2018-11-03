@@ -1,5 +1,6 @@
 <template>
 <div class="row">
+    <img src="/video_feed" />
     <div v-for="(image, index) in images" :key="index" class="image col-md-6">
         <h4>{{ image.name }}</h4>
         <image-component :image-data="image" :points="record.median" />

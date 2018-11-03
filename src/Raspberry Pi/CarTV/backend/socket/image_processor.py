@@ -4,8 +4,7 @@ import sys
 import time
 
 from pymemcache.client import base
-
-from ..server import socketio
+from server import socketio
 
 root_path = os.path.dirname(os.path.realpath(__file__))
 sys.path.append(os.path.abspath(os.path.join(root_path, '../../../')))
@@ -32,37 +31,37 @@ def processor():
             x_points = [int(p[0]) for p in mid_points]
             # can.send_messages_for_image_samples(x_points, img['id'])
 
-            if img['id'] != last_image_id:
-                print('emit image {}'.format(img['id']))
-                img['data'] = img['data'].tobytes()
-                socketio.emit('monitor', {
-                    'images': [
-                        {
-                            'name': 'Captured',
-                            'data': img['data'],
-                            'format': img['format'],
-                            'width': img['width'],
-                            'height': img['height']
-                        }#,
-                        # {
-                        #     'name': 'Grayscale',
-                        #     'data': gray_image.tobytes(),
-                        #     'format': 'grayscale',
-                        #     'width': img['width'],
-                        #     'height': img['height']
-                        # },
-                        # {
-                        #     'name': 'Sobel Operator',
-                        #     'data': edge_image.tobytes(),
-                        #     'format': 'rgb',
-                        #     'width': img['width'],
-                        #     'height': img['height']
-                        # }
-                    ],
-                    'median': mid_points
-                })
+            # if img['id'] != last_image_id:
+            #     print('emit image {}'.format(img['id']))
+            #     img['data'] = img['data'].tobytes()
+            #     socketio.emit('monitor', {
+            #         'images': [
+            #             {
+            #                 'name': 'Captured',
+            #                 'data': img['data'],
+            #                 'format': img['format'],
+            #                 'width': img['width'],
+            #                 'height': img['height']
+            #             }#,
+            #             # {
+            #             #     'name': 'Grayscale',
+            #             #     'data': gray_image.tobytes(),
+            #             #     'format': 'grayscale',
+            #             #     'width': img['width'],
+            #             #     'height': img['height']
+            #             # },
+            #             # {
+            #             #     'name': 'Sobel Operator',
+            #             #     'data': edge_image.tobytes(),
+            #             #     'format': 'rgb',
+            #             #     'width': img['width'],
+            #             #     'height': img['height']
+            #             # }
+            #         ],
+            #         'median': mid_points
+            #     })
 
-                last_image_id = img['id']
+            #     last_image_id = img['id']
 
         time.sleep(0.5)
 

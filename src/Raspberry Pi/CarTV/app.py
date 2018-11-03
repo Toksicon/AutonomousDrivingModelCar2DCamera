@@ -1,8 +1,28 @@
 #!/usr/bin/python
 import argparse
+import os
+import subprocess
+import sys
 
-from backend.server import app, socketio
-from backend.processors import image, telemetry
+import http
+import socket
+
+
+root_path = os.path.dirname(os.path.realpath(__file__))
+
+
+def start_http_server():
+    call = [sys.executable, os.path.join(root_path, 'backend/http/app.py')]
+    call.extend(sys.argv[1:])
+
+    return subprocess.Popen(call)
+
+
+def start_socket_server():
+    call = [sys.executable, os.path.join(root_path, 'backend/socket/app.py')]
+    call.extend(sys.argv[1:])
+
+    return subprocess.Popen(call)
 
 
 if __name__ == '__main__':
@@ -12,30 +32,49 @@ if __name__ == '__main__':
     parser.add_argument('-d', '--debug', action='store_true',
         help='Enables debug mode')
 
-    # host (CarTV only)
+    # host
     parser.add_argument('--host', action='store', default='0.0.0.0',
-        help='Specify the host for CarTV')
+        help='Specify the host for the http and socket server')
 
-    # port (CarTV only)
-    parser.add_argument('--port', action='store', type=int, default=5000,
-        help='Specify the port for CarTV')
+    # http-port
+    parser.add_argument('--http-port', action='store', type=int, default=8080,
+        help='Specify the port for the http server')
 
-    # image processor
-    parser.add_argument('--process-images', type=int, default=1,
-        help='Disables the image processor (camera and can)')
+    # http-port
+    parser.add_argument('--socket-port', action='store', type=int, default=8081,
+        help='Specify the port for the websocket')
 
-    # telemetry processor
-    parser.add_argument('--process-telemetry', type=int, default=1,
-        help='Disables the image telemetry (psutil)')
+    # http server
+    parser.add_argument('--http', type=int, default=1,
+        help='Disables the http server')
 
-    
+    # websocket
+    parser.add_argument('--socket', type=int, default=1,
+        help='Disables the websocket')
 
     args = parser.parse_args()
 
-    if args.process_images:
-        socketio.start_background_task(target=image.processor)
+    http = None
+    socket = None
 
-    if args.process_telemetry:
-        socketio.start_background_task(target=telemetry.processor)
+    try:
+        if args.http:
+            http = start_http_server()
 
-    socketio.run(app, host=args.host, port=args.port, debug=args.debug, use_reloader=True)
+        if args.socket:
+            socket = start_socket_server()
+
+        if http:
+            http.wait()
+
+        if socket:
+            socket.wait()
+
+    except Exception as e:
+        print(e)
+
+        if http:
+            http.terminate()
+
+        if socket:
+            socket.terminate()

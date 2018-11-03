@@ -1,8 +1,10 @@
+import os
 import psutil
+import sys
 import time
 
 try:
-    from ..server import socketio
+    from server import socketio
 
     def processor():
         while True:
@@ -26,8 +28,8 @@ try:
             socketio.emit('net_if_stats', net_if_stats())
 
             time.sleep(1)
-except:
-    print('SocketIO couldn\'t be loaded')
+except Exception as e:
+    print('SocketIO couldn\'t be loaded: {}'.format(e))
 
     def processor():
         while True:
