@@ -5,6 +5,16 @@
 
 #app > .navbar {
     background: linear-gradient(145deg, #349aed 50%, #34d8ed 100%);
+
+    .navbar-brand {
+        font-size: 150%;
+        margin: -15px 20px -15px 0;
+
+        img {
+            height: 40px;
+            margin: -10px 0 0 0;
+        }
+    }
 }
 
 .content {
