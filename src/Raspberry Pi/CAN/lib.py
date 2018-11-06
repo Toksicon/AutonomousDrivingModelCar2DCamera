@@ -38,7 +38,8 @@ class CanMessenger(EmptyCanMessenger):
             payload.extend(image_id.to_bytes(2, self._can._endian_system))
             payload.extend(number_of_sample.to_bytes(1, self._can._endian_system))
             payload.extend(sample_number.to_bytes(1, self._can._endian_system))
-            payload.extend(sample.to_bytes(4, self._can._endian_system))
+            payload.extend(int(sample[0] * (2 ** 16)).to_bytes(2, self._can._endian_system))
+            payload.extend(int(sample[1] * (2 ** 16)).to_bytes(2, self._can._endian_system))
 
             message = can.Message(is_remote_frame=False, extended_id=False, arbitration_id=0x200,
                                 dlc=len(payload), data=payload)
