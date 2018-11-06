@@ -18,105 +18,22 @@ def processor():
     client = base.Client(('localhost', 11211))
     last_image_id = 0
 
-    # with Can() as can:
-    while True:
-        raw_data = client.get('captured_image')
-        if raw_data:
-            img = pickle.loads(raw_data)
-            gray_image = cpiclib.grayscale_filter(img['data'])
-            edge_image = cpiclib.sobel_operator(gray_image)
+    with Can() as can:
+        while True:
+            raw_data = client.get('captured_image')
+            if raw_data:
+                img = pickle.loads(raw_data)
+                gray_image = cpiclib.grayscale_filter(img['data'])
+                edge_image = cpiclib.sobel_operator(gray_image)
 
-            mid_points = cpiclib.detect_mid(edge_image)
+                mid_points = cpiclib.detect_mid(edge_image)
 
-            x_points = [int(p[0]) for p in mid_points]
-            # can.send_messages_for_image_samples(x_points, img['id'])
+                x_points = [int(p[0]) for p in mid_points]
 
-            # if img['id'] != last_image_id:
-            #     print('emit image {}'.format(img['id']))
-            #     img['data'] = img['data'].tobytes()
-            #     socketio.emit('monitor', {
-            #         'images': [
-            #             {
-            #                 'name': 'Captured',
-            #                 'data': img['data'],
-            #                 'format': img['format'],
-            #                 'width': img['width'],
-            #                 'height': img['height']
-            #             }#,
-            #             # {
-            #             #     'name': 'Grayscale',
-            #             #     'data': gray_image.tobytes(),
-            #             #     'format': 'grayscale',
-            #             #     'width': img['width'],
-            #             #     'height': img['height']
-            #             # },
-            #             # {
-            #             #     'name': 'Sobel Operator',
-            #             #     'data': edge_image.tobytes(),
-            #             #     'format': 'rgb',
-            #             #     'width': img['width'],
-            #             #     'height': img['height']
-            #             # }
-            #         ],
-            #         'median': mid_points
-            #     })
+                # TODO: move this to a standalone app
+                can.send_messages_for_image_samples(x_points, img['id'])
 
-            #     last_image_id = img['id']
-
-        time.sleep(0.5)
-
-
-
-    # TODO: get image from memcached
-
-    # with Can() as can:
-    #     while True:
-    #         t0 = time.time()
-    #         captured_image = camera.capture()
-    #         t1 = time.time()
-    #         print("TIME: ", t1 - t0)
-
-    #         print('camera.captured')
-    #         gray_image = cpiclib.grayscale_filter(captured_image)
-    #         edge_image = cpiclib.sobel_operator(gray_image)
-
-    #         mid_points = cpiclib.detect_mid(edge_image)
-
-    #         x_points = [int(p[0]) for p in mid_points]
-
-    #         can.send_messages_for_image_samples(x_points, image_id)
-    #         image_id += 1
-
-
-    #         if last_emit < time.time() - 0.4:
-    #             socketio.emit('monitor', {
-    #                 'images': [
-    #                     {
-    #                         'name': 'Captured',
-    #                         'data': captured_image.tobytes(),
-    #                         'format': 'rgb',
-    #                         'width': len(captured_image[0]),
-    #                         'height': len(captured_image)
-    #                     },
-    #                     {
-    #                         'name': 'Grayscale',
-    #                         'data': gray_image.tobytes(),
-    #                         'format': 'grayscale',
-    #                         'width': len(gray_image[0]),
-    #                         'height': len(gray_image)
-    #                     },
-    #                     {
-    #                         'name': 'Sobel Operator',
-    #                         'data': edge_image.tobytes(),
-    #                         'format': 'grayscale',
-    #                         'width': len(edge_image[0]),
-    #                         'height': len(edge_image)
-    #                     }
-    #                 ],
-    #                 'median': mid_points
-    #             })
-
-    #             last_emit = time.time()
+            time.sleep(0.5)
 
 if __name__ == '__main__':
     processor()

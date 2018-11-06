@@ -1,14 +1,20 @@
 #!/usr/bin/python
 import argparse
-import pickle
-import json
 import numpy as np
+import os
+import pickle
+import sys
 
 from pymemcache.client import base
+from PIL import Image
 from time import time
 
 from camera import Camera
 from logger import logger, logging
+
+root_path = os.path.dirname(os.path.realpath(__file__))
+sys.path.append(os.path.abspath(os.path.join(root_path, '../')))
+from CPicLib import CPicLib
 
 
 if __name__ == '__main__':
@@ -26,14 +32,28 @@ if __name__ == '__main__':
     image_id = 1
     client = base.Client(('localhost', 11211))
 
+    cpiclib = CPicLib()
+
     with Camera((384, 240)) as camera:
         while True:
             logger.info('>>> image {}'.format(image_id))
 
+            # capture image
             t = time()
             captured_image = camera.capture()
             logger.debug('capturing time: {}'.format(time() - t))
 
+            # grayscale image
+            t = time()
+            grayscaled_image = cpiclib.grayscale_filter(captured_image)
+            logger.debug('grayscale time: {}'.format(time() - t))
+
+            # detect edges
+            t = time()
+            edge_detected_image = cpiclib.sobel_operator(grayscaled_image)
+            logger.debug('edge_operator: {}'.format(time() - t))
+
+            # serialize captured image
             t = time()
             data = {
                 'id': image_id,
@@ -44,6 +64,21 @@ if __name__ == '__main__':
             }
 
             client.set('captured_image', pickle.dumps(data), 1)
-            logger.debug('serialization time: {}'.format(time() - t))
+            logger.debug('captured image serialization time: {}'.format(time() - t))
+
+            # serialize grayscaled image
+            t = time()
+            data['format'] = 'grayscale'
+            data['data'] = grayscaled_image
+
+            client.set('grayscaled_image', pickle.dumps(data), 1)
+            logger.debug('grayscaled image serialization time: {}'.format(time() - t))
+
+            # serialize edge detected image
+            t = time()
+            data['data'] = edge_detected_image
+
+            client.set('edge_detected_image', pickle.dumps(data), 1)
+            logger.debug('edge detected image serialization time: {}'.format(time() - t))
 
             image_id += 1

@@ -31,43 +31,39 @@ def index(path):
         return send_from_directory(os.path.join(root_path, '../../static'), 'index.html')
 
 
-def gen(camera):
+def gen(image_key):
     cpiclib = CPicLib()
 
     client = base.Client(('localhost', 11211))
     last_image_id = 0
 
     while True:
-        raw_data = client.get('captured_image')
+        raw_data = client.get(image_key)
         if raw_data:
             # t = time()
             img = pickle.loads(raw_data)
             # print('loads', time() - t)
 
-            fp = io.BytesIO()
-            # t = time()
-            gray_image = cpiclib.grayscale_filter(img['data'])
-            # print('grayscale', time() - t)
-            # t = time()
-            edge_image = cpiclib.sobel_operator(gray_image)
-            # print('edge_operator', time() - t)
-
-            # t = time()
-            Image.fromarray(edge_image).save(fp, 'jpeg')
-            # print('toJPEG', time() - t)
-
             if img['id'] != last_image_id:
                 # t = time()
+                fp = io.BytesIO()
+                Image.fromarray(img['data']).save(fp, 'jpeg')
+                # print('toJPEG', time() - t)
 
+                # t = time()
                 yield (b'--frame\r\n'
                        b'Content-Type: image/jpeg\r\n\r\n' + bytes(fp.getvalue()) + b'\r\n')
                 # print('send', time() - t)
 
 
+@app.route('/video_feed', defaults={'path': ''})
+@app.route('/video_feed/', defaults={'path': ''})
+@app.route('/video_feed/<path:path>')
+def video_feed(path):
+    keys = ['grayscaled_image', 'edge_detected_image']
+    key = path if path in keys else 'captured_image'
 
-@app.route('/video_feed')
-def video_feed():
-    return Response(gen(None),
+    return Response(gen(key),
                     mimetype='multipart/x-mixed-replace; boundary=frame')
 
 

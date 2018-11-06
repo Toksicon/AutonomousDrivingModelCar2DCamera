@@ -1,9 +1,6 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
-// monitor
-import monitor from './modules/monitor';
-
 // telemetry
 //// cpu
 import cpu_freq from './modules/cpu_freq';
@@ -17,7 +14,6 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     modules: {
         cpu_freq,
-        monitor,
         virtual_memory,
     },
 });

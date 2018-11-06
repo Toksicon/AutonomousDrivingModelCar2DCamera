@@ -17,6 +17,6 @@ sudo apt-get install -y memcached
 sudo apt-get install -y libopenjp2-7 libtiff5
 
 # webserver
-# override /etc/nginx/sites-available/default
+# cat ./target/etc/nginx/sites-available/default > /etc/nginx/sites-available/default
 sudo apt-get install -y nginx
 sudo /etc/init.d/nginx start
