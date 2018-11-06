@@ -91,5 +91,4 @@ if __name__ == '__main__':
     if args.debug:
         logger.setLevel(logging.DEBUG)
 
-    print('HTTP-PORT: {}'.format(args.http_port))
     app.run(host=args.host, port=args.http_port, debug=args.debug, threaded=True, use_reloader=False)
