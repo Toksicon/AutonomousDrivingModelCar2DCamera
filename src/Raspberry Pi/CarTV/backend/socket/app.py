@@ -2,7 +2,7 @@
 import argparse
 
 from logger import logger, logging
-import image_processor, telemetry_processor
+import telemetry_processor
 from server import app, socketio
 
 
@@ -21,10 +21,6 @@ if __name__ == '__main__':
     parser.add_argument('--socket-port', action='store', type=int, default=8081,
         help='Specify the port for the webserver')
 
-    # image processor
-    parser.add_argument('--process-images', type=int, default=1,
-        help='Disables the image processor (camera and can)')
-
     # telemetry processor
     parser.add_argument('--process-telemetry', type=int, default=1,
         help='Disables the image telemetry (psutil)')
@@ -33,10 +29,6 @@ if __name__ == '__main__':
 
     if args.debug:
         logger.setLevel(logging.DEBUG)
-
-    if args.process_images:
-        print('Starting image processor')
-        socketio.start_background_task(target=image_processor.processor)
 
     if args.process_telemetry:
         print('Starting telemetry processor')
