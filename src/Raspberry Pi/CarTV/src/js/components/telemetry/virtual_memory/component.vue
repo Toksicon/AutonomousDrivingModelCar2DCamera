@@ -20,6 +20,7 @@ export default {
                         },
                     },
                 },
+                animation: false,
             },
         };
     },

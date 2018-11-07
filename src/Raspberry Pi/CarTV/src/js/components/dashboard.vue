@@ -1,6 +1,6 @@
 <template>
 <div class="row">
-    <div class="col-12 col-md-8 d-flex">
+    <div class="col-12 col-md-8 col-xl-9 d-flex">
         <div class="card flex-fill w-100">
             <div class="card-header">
                 <h5 class="card-title mb-0">Monitor</h5>
@@ -10,7 +10,7 @@
             </div>
         </div>
     </div>
-    <div class="col-12 col-md-4">
+    <div class="col-12 col-md-4 col-xl-3">
         <div class="card flex-fill w-100">
             <div class="card-header">
                 <h5 class="card-title mb-0">Memory</h5>
@@ -25,7 +25,7 @@
                 <h5 class="card-title mb-0">CPU</h5>
             </div>
             <div class="card-body px-4">
-                <cpu-component />
+                <cpu-percent-component />
             </div>
         </div>
     </div>
@@ -33,14 +33,14 @@
 </template>
 
 <script>
-import CpuComponent from './cpu';
+import CpuPercentComponent from './telemetry/cpu_percent/component.vue';
 import MonitorComponent from './monitor';
 
 import VirtualMemoryComponent from './telemetry/virtual_memory/component.vue';
 
 export default {
     components: {
-        CpuComponent,
+        CpuPercentComponent,
         MonitorComponent,
         VirtualMemoryComponent,
     },
