@@ -37,7 +37,7 @@ if __name__ == '__main__':
                     last_image_id = img['id']
 
                     mid_points = cpiclib.detect_mid(img['data'])
-                    x_points = [int(p[0]) for p in mid_points]
+                    points = [(p[0] / img['width'], 1 - (p[1] / img['height'])) for p in mid_points]
 
-                    can.send_messages_for_image_samples(x_points, img['id'])
-                    time.sleep(0.5)  # delay for CAN
+                    can.send_messages_for_image_samples(points, img['id'])
+                    time.sleep(0.2)  # delay for CAN

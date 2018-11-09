@@ -6,7 +6,7 @@ import pickle
 import sys
 
 from pymemcache.client import base
-from PIL import Image
+from PIL import Image, ImageDraw
 from time import time
 
 from camera import Camera
@@ -52,6 +52,15 @@ if __name__ == '__main__':
             t = time()
             edge_detected_image = cpiclib.sobel_operator(grayscaled_image)
             logger.debug('edge_operator: {}'.format(time() - t))
+
+            mid_points = cpiclib.detect_mid(edge_detected_image)
+            mid_points_image = Image.fromarray(edge_detected_image).convert('RGB')
+            draw = ImageDraw.Draw(mid_points_image)
+            for point in mid_points:
+                draw.line((point[0] - 2, point[1] - 2, point[0] + 2, point[1] + 2), fill=(255, 255, 255))
+                draw.line((point[0] - 2, point[1] + 2, point[0] + 2, point[1] - 2), fill=(255, 255, 255))
+            del draw
+            edge_detected_image = np.asarray(mid_points_image)
 
             # serialize captured image
             t = time()

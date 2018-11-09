@@ -141,7 +141,7 @@ class CPicLib:
         @param image     2-dimensional numpy array [y][x] (grayscale).
         @param samples   Amount of samples to take from the image (samples < (height - 2))
 
-        @return     List of mids (y, x) of the road.
+        @return     List of mids (x, y) of the road.
     '''
     def detect_mid(self, image, samples=10):
         (width, height, size) = self._image_shape(image)
@@ -157,7 +157,7 @@ class CPicLib:
         for i in range(0, samples):
             mid = (output[i * 2], output[i * 2 + 1])
 
-            if mid[1] < width:
+            if mid[0] < width:
                 mids.append((int(mid[0]), int(mid[1])))
 
         return mids

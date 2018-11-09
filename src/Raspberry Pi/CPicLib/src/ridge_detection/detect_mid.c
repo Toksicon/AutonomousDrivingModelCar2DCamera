@@ -56,7 +56,7 @@ void detect_mid(
     for (uint_t i = 1; i < samples; i++)
     {
         uint_t line = ((uint_t)(nth_sample * i));
-        out[i * 2] = line;
-        out[i * 2 + 1] = detect_row_mid(image + line * width, width);
+        out[i * 2] = detect_row_mid(image + line * width, width);
+        out[i * 2 + 1] = line;
     }
 }
