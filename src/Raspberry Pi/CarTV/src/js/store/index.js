@@ -1,6 +1,10 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 
+// monitor
+//// can
+import can from './modules/can';
+
 // telemetry
 //// cpu
 import cpu_freq from './modules/cpu_freq';
@@ -14,6 +18,8 @@ Vue.use(Vuex);
 
 export default new Vuex.Store({
     modules: {
+        can,
+
         cpu_freq,
         cpu_percent,
 
@@ -21,4 +27,4 @@ export default new Vuex.Store({
     },
 });
 
-export const stores = ['cpu_freq', 'cpu_percent', 'virtual_memory'];
+export const stores = ['can', 'cpu_freq', 'cpu_percent', 'virtual_memory'];

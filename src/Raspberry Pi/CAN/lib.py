@@ -1,5 +1,8 @@
-import time
 import os
+import pickle
+import time
+
+from pymemcache.client import base
 
 try:
     import can
@@ -15,17 +18,31 @@ class EmptyCanMessenger:
     def __init__(self, can):
         self._can = can
 
+        self._shared_memory_client = base.Client(('localhost', 11211))
+
     def send_messages_for_image_samples(self, analyzed_samples, image_id):
         pass
+
+    def send(self, message):
+        self._can._bus.send(message)
+        self._shared_memory_client.set('can',
+            pickle.dumps({
+                'from': 'Raspberry Pi',
+                'to': 'Arduino',
+                'arbitration_id': message.arbitration_id,
+                'payload': list(message.data)
+            }))
 
 
 ''' CanMessenger implementation is used, when the can module has been loaded.
 '''
 class CanMessenger(EmptyCanMessenger):
     def __init__(self, can):
-        self._can = can
+        super().__init__(can)
 
     def send_messages_for_image_samples(self, analyzed_samples, image_id):
+        super().send_messages_for_image_samples(analyzed_samples, image_id)
+
         sample_number = 1
         number_of_sample = len(analyzed_samples)
 
@@ -42,7 +59,7 @@ class CanMessenger(EmptyCanMessenger):
 
             message = can.Message(is_remote_frame=False, extended_id=False, arbitration_id=0x200,
                                 dlc=len(payload), data=payload)
-            self._can._bus.send(message)
+            super().send(message)
 
             sample_number += 1
             time.sleep(0.01)
