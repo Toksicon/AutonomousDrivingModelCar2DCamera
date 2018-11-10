@@ -1,0 +1,3 @@
+[submodule "src/Arduino/driver/libraries/ArduinoSTL"]
+	path = src/Arduino/driver/libraries/ArduinoSTL
+	url = https://github.com/mike-matera/ArduinoSTL.git
