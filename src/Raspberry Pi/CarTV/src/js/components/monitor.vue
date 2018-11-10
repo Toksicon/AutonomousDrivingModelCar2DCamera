@@ -1,39 +1,41 @@
 <template>
 <div>
     <div class="row">
-        <feed-component v-for="(feed, index) in feeds" :key="index"
-            :title="feed.title"
-            :src="feed.src" />
+        <div class="col-12">
+            <div class="card flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Memory</h5>
+                </div>
+                <div class="card-body px-4">
+                    <viewport-component />
+                </div>
+            </div>
+        </div>
     </div>
-    <can-component />
+    <br>
+    <div class="row">
+        <div class="col-12">
+            <div class="card flex-fill w-100">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">CPU</h5>
+                </div>
+                <div class="card-body px-4">
+                    <can-component />
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 </template>
 
 <script>
 import CanComponent from './monitor/can.vue';
-import FeedComponent from './monitor/feed.vue';
+import ViewportComponent from './monitor/viewport.vue';
 
 export default {
     components: {
         CanComponent,
-        FeedComponent,
-    },
-
-    data() {
-        return {
-            feeds: [
-                {
-                    title: 'Captured Image',
-                    src: '/video_feed/captured_image',
-                }, {
-                    title: 'Grayscaled Image',
-                    src: '/video_feed/grayscaled_image',
-                }, {
-                    title: 'Edge Detected Image',
-                    src: '/video_feed/edge_detected_image',
-                }
-            ]
-        };
+        ViewportComponent,
     },
 };
 </script>

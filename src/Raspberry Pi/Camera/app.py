@@ -54,11 +54,11 @@ if __name__ == '__main__':
             logger.debug('edge_operator: {}'.format(time() - t))
 
             mid_points = cpiclib.detect_mid(edge_detected_image)
-            mid_points_image = Image.fromarray(edge_detected_image).convert('RGB')
+            mid_points_image = Image.fromarray(edge_detected_image)
             draw = ImageDraw.Draw(mid_points_image)
             for point in mid_points:
-                draw.line((point[0] - 2, point[1] - 2, point[0] + 2, point[1] + 2), fill=(255, 255, 255))
-                draw.line((point[0] - 2, point[1] + 2, point[0] + 2, point[1] - 2), fill=(255, 255, 255))
+                draw.line((point[0] - 2, point[1] - 2, point[0] + 2, point[1] + 2), fill=255)
+                draw.line((point[0] - 2, point[1] + 2, point[0] + 2, point[1] - 2), fill=255)
             del draw
             edge_detected_image = np.asarray(mid_points_image)
 

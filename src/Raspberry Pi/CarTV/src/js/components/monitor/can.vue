@@ -16,7 +16,7 @@
         </label>
         </div>
     </div>
-    <div class="console" ref="console">
+    <div class="console" ref="console" style="clear: both;">
         <div v-for="(message, index) in filteredLog" :key="index">
             <b>[0x{{ message.arbitration_id.toString(16) }}] {{ stringifyArbitration(message.arbitration_id) }}:</b>
             {{ stringifyMessage(message) }}
@@ -143,8 +143,12 @@ export default {
 
 .console
 {
-    max-height: 100px;
+    height: 100px;
     overflow: auto;
+    margin-top: 10px;
+    padding: 5px 10px;
+
+    border: 1px solid lightgray;
 }
 
 </style>
