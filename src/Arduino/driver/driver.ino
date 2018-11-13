@@ -5,12 +5,22 @@
 #include <vector>
 #include "servotest.h"
 #include "accelerometer.h"
+#include <NewPing.h>
+#include <LiquidCrystal_I2C.h>
 
 #define STEERING_SERVO_NUM 0
 #define SPOILER_SERVO_NUM 1
 #define PIN_X 2
 #define PIN_Y 1
 #define PIN_Z 0
+#define SONAR_TRIGGER_PIN 13 
+#define SONAR_ECHO_PIN 12
+#define SONAR_MAX_DISTANCE 200
+
+NewPing sonar(SONAR_TRIGGER_PIN,SONAR_ECHO_PIN,SONAR_MAX_DISTANCE);
+
+// Set the LCD address to 0x27 for a 16 chars and 2 line display
+LiquidCrystal_I2C lcd(0x27, 16, 2);
 
 void printReceivedMessage(uint16_t canID, uint16_t image_id, uint8_t sample_count, uint8_t sample_cur, uint16_t sample_x, uint16_t sample_y)
 {
@@ -60,7 +70,11 @@ void setup()
   Serial.begin(115200);
   CAN.begin(CAN_500KBPS);  // init can bus : baudrate = 500k  
   setupSpoiler(SPOILER_SERVO_NUM);
-  
+  // initialize the LCD
+  lcd.begin();
+
+  // Turn on the blacklight and print a message.
+  lcd.backlight();
 }
 
 void loop()
@@ -92,11 +106,19 @@ void loop()
       }      
       Serial.println();
     }
-    // testServo();
+    testServo();
     Vec3D data = readAccelerometer(PIN_X, PIN_Y, PIN_Z);
     //Serial.print("PIN X: "); Serial.println(data.x);
     //Serial.print("PIN Y: "); Serial.println(data.y);
     //Serial.print("PIN Z: "); Serial.println(data.z);
     Serial.print(data.x);Serial.print(","); Serial.print(data.y);Serial.print(","); Serial.println(data.z);
+    Serial.println(sonar.ping()/US_ROUNDTRIP_CM);
+    lcd.clear();
+    char lcdBuf[16];
+    sprintf(lcdBuf, "X=%5d  Y=%5d", data.x, data.y);
+    lcd.print(lcdBuf);
+    lcd.setCursor(0,1);
+    sprintf(lcdBuf, "Z=%5d  S=%5d", data.z, (sonar.ping()/US_ROUNDTRIP_CM));
+    lcd.print(lcdBuf);
     delay(100);
 }

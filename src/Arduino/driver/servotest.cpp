@@ -16,19 +16,4 @@ void testServo() {
   // map(value, fromLow, fromHigh, toLow, toHigh)
 	double pulselength = map(random(0,71) - 35, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);	
 	pwm.setPWM(g_servonumber, 0, pulselength);
-  delay(1000);
-  
-  // map(value, fromLow, fromHigh, toLow, toHigh)
-  pulselength = map(random(0,71) - 35, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);
-  pwm.setPWM(g_servonumber, 0, pulselength);
-  delay(1500);
-  
-  // map(value, fromLow, fromHigh, toLow, toHigh)
-  pulselength = map(random(0,71) - 35, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);
-  pwm.setPWM(g_servonumber, 0, pulselength);
-  delay(2000);
-
-	pulselength = map(random(0,71) - 35, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);
-	pwm.setPWM(g_servonumber, 0, pulselength);
-  delay(1000);
 }
