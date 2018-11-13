@@ -3,6 +3,14 @@
 #include <SPI.h>
 #include <stdint.h>
 #include <vector>
+#include "servotest.h"
+#include "accelerometer.h"
+
+#define STEERING_SERVO_NUM 0
+#define SPOILER_SERVO_NUM 1
+#define PIN_X 2
+#define PIN_Y 1
+#define PIN_Z 0
 
 void printReceivedMessage(uint16_t canID, uint16_t image_id, uint8_t sample_count, uint8_t sample_cur, uint16_t sample_x, uint16_t sample_y)
 {
@@ -48,8 +56,11 @@ MCP_CAN CAN(10);
 
 void setup()
 {
+  randomSeed(analogRead(0));
   Serial.begin(115200);
-  CAN.begin(CAN_500KBPS);                       // init can bus : baudrate = 500k  
+  CAN.begin(CAN_500KBPS);  // init can bus : baudrate = 500k  
+  setupSpoiler(SPOILER_SERVO_NUM);
+  
 }
 
 void loop()
@@ -77,11 +88,15 @@ void loop()
           {
             delete g_image;
           }
-          g_image->push(sample);
-          
-          
-      }
-      
+          g_image->push(sample);                   
+      }      
       Serial.println();
     }
+    // testServo();
+    Vec3D data = readAccelerometer(PIN_X, PIN_Y, PIN_Z);
+    //Serial.print("PIN X: "); Serial.println(data.x);
+    //Serial.print("PIN Y: "); Serial.println(data.y);
+    //Serial.print("PIN Z: "); Serial.println(data.z);
+    Serial.print(data.x);Serial.print(","); Serial.print(data.y);Serial.print(","); Serial.println(data.z);
+    delay(100);
 }

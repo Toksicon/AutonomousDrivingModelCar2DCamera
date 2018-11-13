@@ -11,7 +11,11 @@ Stepper myStepper(200,0,1,2,3,4);
 void setup()
 {
   Serial.begin(115200);
-  CAN.begin(CAN_500KBPS);                       // init can bus : baudrate = 500k  
+  CAN.begin(CAN_500KBPS);  // init can bus : baudrate = 500k  
+    
+  spoiler_pwm.begin();
+  spoiler_pwm.setPWMFreq(60);  // Analog servos run at ~60 Hz updates
+  delay(10);
 }
 
 void loop()
