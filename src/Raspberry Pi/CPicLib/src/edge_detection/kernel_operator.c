@@ -52,7 +52,8 @@ void kernel_operator(
                 );
 
                 // the new pixel is found by its neighbors
-                out[offset] = (uint8_t)ceil(sqrt((pixel_x * pixel_x) + (pixel_y * pixel_y)));
+                // mapping: max/uint8_max = sqrt(1300500)/255 = 4.47
+                out[offset] = (uint8_t)ceil(sqrt((pixel_x * pixel_x) + (pixel_y * pixel_y)) / 4.47);
             }
         }
     }

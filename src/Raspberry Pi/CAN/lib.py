@@ -11,10 +11,11 @@ except:
     print('Failed to load can module')
 
 
-''' EmptyCanMessenger is used, when the can module couldn't be loaded.
-    This should only happen in test environments (desktop machines).
-'''
 class EmptyCanMessenger:
+    """ EmptyCanMessenger is used, when the can module couldn't be loaded.
+        This should only happen in test environments (desktop machines).
+    """
+
     def __init__(self, can):
         self._can = can
 
@@ -34,9 +35,9 @@ class EmptyCanMessenger:
             }))
 
 
-''' CanMessenger implementation is used, when the can module has been loaded.
-'''
 class CanMessenger(EmptyCanMessenger):
+    """ CanMessenger implementation is used, when the can module has been loaded.
+    """
     def __init__(self, can):
         super().__init__(can)
 
@@ -63,7 +64,7 @@ class CanMessenger(EmptyCanMessenger):
             super().send(message)
 
             sample_number += 1
-            time.sleep(0.01)
+            time.sleep(0.1)
 
 
 class Can:

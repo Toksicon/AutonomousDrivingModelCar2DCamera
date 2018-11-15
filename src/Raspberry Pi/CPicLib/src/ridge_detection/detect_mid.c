@@ -8,25 +8,30 @@
 
 static uint_t detect_row_mid(uint8_t* row, uint_t width)
 {
-    float threshold = 50.f;
+    float threshold = 100.f;
 
-    uint_t left_pixel = width;
-    uint_t right_pixel = 0;
+    uint_t left_pixel = width / 2;
+    uint_t right_pixel = width / 2;
 
-    for (uint_t i = 0; i < width; i++)
+    for (uint_t i = width / 2; i >= 0; i--)
     {
-        float px_contrast = row[i];
+        uint8_t px_contrast = row[i];
 
         if (px_contrast > threshold)
         {
-            if (left_pixel > i)
-            {
-                left_pixel = i;
-            }
-            else
-            {
-                right_pixel = i;
-            }
+            left_pixel = i;
+            break;
+        }
+    }
+
+    for (uint_t i = width / 2; i < width; i++)
+    {
+        uint8_t px_contrast = row[i];
+
+        if (px_contrast > threshold)
+        {
+            right_pixel = i;
+            break;
         }
     }
 

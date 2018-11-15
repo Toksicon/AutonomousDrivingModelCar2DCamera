@@ -14,6 +14,9 @@ void setupSpoiler(int servonumber){
 
 void testServo() { 
   // map(value, fromLow, fromHigh, toLow, toHigh)
-	double pulselength = map(random(0,71) - 35, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);	
+  int number = random(0,71) - 35;
+	double pulselength = map(number, -35, 35, SPOILER_SERVOMAX, SPOILER_SERVOMIN);	
+  delay(1000);
+  Serial.println(number);
 	pwm.setPWM(g_servonumber, 0, pulselength);
 }
