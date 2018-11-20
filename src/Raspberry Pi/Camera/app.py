@@ -60,7 +60,7 @@ if __name__ == '__main__':
                 draw.line((point[0] - 2, point[1] - 2, point[0] + 2, point[1] + 2), fill=255)
                 draw.line((point[0] - 2, point[1] + 2, point[0] + 2, point[1] - 2), fill=255)
             del draw
-            edge_detected_image = np.asarray(mid_points_image)
+            edge_detected_image_with_info = np.asarray(mid_points_image)
 
             # serialize captured image
             t = time()
@@ -89,5 +89,12 @@ if __name__ == '__main__':
 
             client.set('edge_detected_image', pickle.dumps(data), 1)
             logger.debug('edge detected image serialization time: {}'.format(time() - t))
+
+            # serialize edge detected image with info
+            t = time()
+            data['data'] = edge_detected_image_with_info
+
+            client.set('edge_detected_image_with_info', pickle.dumps(data), 1)
+            logger.debug('edge detected image with info serialization time: {}'.format(time() - t))
 
             image_id += 1

@@ -60,7 +60,7 @@ def gen(image_key):
 @app.route('/video_feed/', defaults={'path': ''})
 @app.route('/video_feed/<path:path>')
 def video_feed(path):
-    keys = ['grayscaled_image', 'edge_detected_image']
+    keys = ['grayscaled_image', 'edge_detected_image', 'edge_detected_image_with_info']
     key = path if path in keys else 'captured_image'
 
     return Response(gen(key),

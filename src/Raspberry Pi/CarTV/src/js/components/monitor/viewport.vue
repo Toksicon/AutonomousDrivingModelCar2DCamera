@@ -27,7 +27,7 @@ export default {
                     src: '/video_feed/grayscaled_image',
                 }, {
                     title: 'Edge Detected Image',
-                    src: '/video_feed/edge_detected_image',
+                    src: '/video_feed/edge_detected_image_with_info',
                 }
             ]
         };
