@@ -1,12 +1,12 @@
-//#include "ArduinoSTL.h"
 #include "mcp_can.h"
 #include <SPI.h>
 #include <stdint.h>
-//#include <vector>
 #include "servotest.h"
 #include "accelerometer.h"
 #include <NewPing.h>
-#include <LiquidCrystal_I2C.h>
+#include "LiquidCrystal_I2C.h"
+
+#include "steering.h"
 
 
 #define STEERING_SERVO_NUM 0
@@ -42,7 +42,7 @@ void printReceivedMessage(uint16_t canID, uint16_t image_id, uint8_t sample_coun
 
 uint16_t bytesToInt16(char byte1, char byte2)
 {
-  return ((uint16_t)byte2 << 8) + byte1;
+  return ((uint16_t)byte2 << 8) + (uint16_t) byte1;
 }
 
 /*struct Sample
@@ -78,17 +78,18 @@ void setup()
   lcd.begin();
   // Turn on the blacklight and print a message.
   lcd.backlight();
+
+  setupSteering(STEERING_SERVO_NUM);
   
   CAN.begin(CAN_500KBPS);  // init can bus : baudrate = 500k  
 }
-
 void loop()
 {    
     if(CAN_MSGAVAIL == CAN.checkReceive())                           // check if get data
     {
       g_booted = true;
       CAN.readMsgBuf(&g_len, g_buf);            // read data,  len: data length, buf: data buf
-      uint16_t id = CAN.getCanId();
+      int16_t id = CAN.getCanId();
       if(id == 0x200)
       {
           Serial.print("Correct frame received ");
@@ -96,20 +97,12 @@ void loop()
           uint8_t sample_count = g_buf[2];
           uint8_t sample_cur = g_buf[3];
           uint16_t sample_x = bytesToInt16(g_buf[4], g_buf[5]);
-          uint16_t sample_y = bytesToInt16(g_buf[6], g_buf[7]);   
-          //printReceivedMessage(id, image_id, sample_count, sample_cur, sample_x, sample_y);
-          /*
-          Sample sample(sample_x, sample_y);
-          if(g_image == NULL)
-          {
-            g_image = new Image(image_id, sample_count);            
+          uint16_t sample_y = bytesToInt16(g_buf[6], g_buf[7]);
+          if(sample_cur == 1 && sample_y > 45000) {
+            Serial.print((sample_x) -32786);
+            steer((int16_t)(sample_x-32786));
           }
           
-          if(image_id != g_image->id)
-          {
-            delete g_image;
-          }*/
-          //g_image->push(sample);   
                
       }
       else
