@@ -1,4 +1,4 @@
-#include "mcp_can.h"
+  #include "mcp_can.h"
 #include <SPI.h>
 #include <stdint.h>
 #include "servotest.h"
@@ -65,7 +65,7 @@ Image::Image(uint16_t imageId, uint8_t sampleCount): id(imageId){}*/
 unsigned char g_len = 0;
 unsigned char g_buf[8];
 // Image* g_image = NULL;
-MCP_CAN CAN(10);
+MCP_CAN CAN(9);
 bool g_booted = false;
 unsigned long g_time = 0;
 
