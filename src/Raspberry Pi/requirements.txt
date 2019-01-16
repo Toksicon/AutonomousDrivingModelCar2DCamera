@@ -3,6 +3,8 @@ flask-socketio
 gevent
 gevent-websocket
 numpy
+picamera
 pillow
 psutil
 pymemcache
+python-can
